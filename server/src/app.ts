@@ -22,7 +22,14 @@ const app: Application = express()
 
 // Helmet - Secure HTTP headers
 app.use(helmet({
-  contentSecurityPolicy: false, // Disable CSP for SPA compatibility
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
   crossOriginEmbedderPolicy: false,
 }))
 
@@ -78,7 +85,7 @@ app.use(`/api/${config.server.apiVersion}/auth/register`, authLimiter)
 app.use(`/api/${config.server.apiVersion}`, apiRoutes)
 
 // Root endpoint
-app.get('/api', (_req, res) => {
+app.get('/', (_req, res) => {
   res.status(200).json({
     success: true,
     message: 'CoffeeShop Enterprise CMS API',
@@ -87,35 +94,6 @@ app.get('/api', (_req, res) => {
     timestamp: new Date().toISOString()
   })
 })
-
-// Health check endpoint for Railway
-app.get('/api/v1/health', (_req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Server is healthy',
-    timestamp: new Date().toISOString()
-  })
-})
-
-// ==========================================
-// SERVE FRONTEND (Production)
-// ==========================================
-
-if (config.server.env === 'production') {
-  const clientBuildPath = path.join(__dirname, '../../client/dist')
-  
-  // Serve static files from Vue build
-  app.use(express.static(clientBuildPath))
-  
-  // Handle SPA routing - serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
-    // Skip API routes
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
-      return next()
-    }
-    res.sendFile(path.join(clientBuildPath, 'index.html'))
-  })
-}
 
 // ==========================================
 // ERROR HANDLING

@@ -5,8 +5,8 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "tsc && tsc-alias",
+    "start": "npx prisma db push && node dist/prisma/seed.js && node dist/src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
@@ -29,6 +29,7 @@
     "@prisma/client": "^5.22.0",
     "@types/morgan": "^1.9.10",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.8.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -39,6 +40,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "multer": "^1.4.5-lts.1",
+    "tslib": "^2.8.1",
     "winston": "^3.14.2",
     "zod": "^3.23.8"
   },
@@ -59,10 +61,11 @@
     "nodemon": "^3.1.4",
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node dist/prisma/seed.js"
   }
 }

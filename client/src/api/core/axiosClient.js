@@ -5,9 +5,7 @@
 
 import axios from 'axios'
 
-// In production, use relative URL (same origin). In dev, use localhost
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.PROD ? '/api/v1' : 'http://localhost:3000/api/v1')
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1'
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -37,40 +35,46 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // Handle 401 Unauthorized
+    // Handle 401 Unauthorized - only if user was authenticated
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
+      const hasToken = !!localStorage.getItem('token')
 
-      // Check if it's token expired
-      if (error.response?.data?.code === 'TOKEN_EXPIRED') {
-        try {
-          const refreshToken = localStorage.getItem('refreshToken')
-          if (refreshToken) {
-            const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-              refreshToken
-            })
+      // Only handle 401 if user had a token (was authenticated)
+      if (hasToken) {
+        originalRequest._retry = true
 
-            const newToken = response.data.data.accessToken
-            localStorage.setItem('token', newToken)
-            localStorage.setItem('refreshToken', response.data.data.refreshToken)
+        // Check if it's token expired
+        if (error.response?.data?.code === 'TOKEN_EXPIRED') {
+          try {
+            const refreshToken = localStorage.getItem('refreshToken')
+            if (refreshToken) {
+              const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+                refreshToken
+              })
 
-            originalRequest.headers.Authorization = `Bearer ${newToken}`
-            return apiClient(originalRequest)
+              const newToken = response.data.data.accessToken
+              localStorage.setItem('token', newToken)
+              localStorage.setItem('refreshToken', response.data.data.refreshToken)
+
+              originalRequest.headers.Authorization = `Bearer ${newToken}`
+              return apiClient(originalRequest)
+            }
+          } catch (refreshError) {
+            // Refresh failed, logout
+            localStorage.removeItem('token')
+            localStorage.removeItem('refreshToken')
+            localStorage.removeItem('user')
+            window.location.href = '/login'
           }
-        } catch (refreshError) {
-          // Refresh failed, logout
+        } else {
+          // Not token expired, just unauthorized - clear auth and redirect
           localStorage.removeItem('token')
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('user')
           window.location.href = '/login'
         }
-      } else {
-        // Not token expired, just unauthorized
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
       }
+      // If no token, just reject the error without redirect (allow public requests to fail gracefully)
     }
 
     // Handle 423 Account Locked

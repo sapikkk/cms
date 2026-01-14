@@ -412,8 +412,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-  // Check authentication
-  if (to.meta.requiresAuth !== false) {
+  // Check authentication (only for routes that explicitly require auth)
+  if (to.meta.requiresAuth === true) {
     const authResult = authGuard(to, from)
     if (authResult !== true) {
       return next(authResult)
