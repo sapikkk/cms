@@ -3,7 +3,7 @@
  * API calls for file uploads to Cloudinary
  */
 
-import apiClient from '../core/axios'
+import apiClient from '../core/axiosClient'
 
 /**
  * Upload single image to Cloudinary
