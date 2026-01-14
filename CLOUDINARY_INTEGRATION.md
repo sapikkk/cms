@@ -4,6 +4,12 @@
 
 Sistem sekarang telah terintegrasi dengan **Cloudinary** untuk upload image langsung dari dalam aplikasi. User tidak perlu lagi keluar sistem untuk upload image dan mendapatkan URL.
 
+## 🚀 Production Deployment
+
+- **Frontend**: https://client-ten-drab-52.vercel.app
+- **Backend API**: https://antitesa-api-production.up.railway.app/api/v1
+- **Status**: ✅ Live & Running
+
 ## 🎯 Features
 
 - ✅ Upload image langsung ke Cloudinary
