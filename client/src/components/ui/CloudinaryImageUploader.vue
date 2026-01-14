@@ -40,10 +40,31 @@
         </div>
         <p class="upload-text">
           <strong>{{
-            uploading ? "Mengupload..." : "Klik untuk upload"
+            uploading ? "Mengupload..." : "Klik area ini atau drag & drop"
           }}</strong>
-          atau drag & drop
         </p>
+        <button
+          @click.stop="triggerFileInput"
+          :disabled="disabled || uploading"
+          class="btn-browse"
+          type="button"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Browse Files
+        </button>
         <p class="upload-hint">
           {{ hint || "PNG, JPG, GIF, WebP (Max 10MB)" }}
         </p>
@@ -156,7 +177,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "uploaded", "error"]);
 
-const { showSuccess: showSuccessToast, showError } = useNotification();
+const { success: showSuccessToast, error: showErrorToast } = useNotification();
 
 const fileInput = ref(null);
 const isDragging = ref(false);
@@ -178,7 +199,7 @@ watch(
 );
 
 const triggerFileInput = () => {
-  if (!disabled.value && !uploading.value) {
+  if (!props.disabled && !uploading.value) {
     fileInput.value?.click();
   }
 };
@@ -239,9 +260,32 @@ const uploadFile = async (file) => {
     }, 3000);
   } catch (err) {
     console.error("Upload error:", err);
-    error.value = err.message || "Gagal mengupload image";
+
+    // Better error messages
+    let errorMessage = "Gagal mengupload image";
+
+    if (err.response) {
+      const status = err.response.status;
+      if (status === 401) {
+        errorMessage = "Anda harus login terlebih dahulu untuk upload gambar";
+      } else if (status === 404) {
+        errorMessage =
+          "Endpoint upload tidak ditemukan. Pastikan server sudah berjalan";
+      } else if (status === 413) {
+        errorMessage = "Ukuran file terlalu besar";
+      } else if (err.response.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+    } else if (err.request) {
+      errorMessage =
+        "Tidak dapat terhubung ke server. Cek koneksi internet Anda";
+    } else if (err.message) {
+      errorMessage = err.message;
+    }
+
+    error.value = errorMessage;
     emit("error", err);
-    showError(error.value);
+    showErrorToast(errorMessage);
   } finally {
     uploading.value = false;
   }
@@ -267,12 +311,12 @@ const copyUrl = async () => {
     await navigator.clipboard.writeText(imageUrl.value);
     showSuccessToast("URL berhasil dicopy!");
   } catch (err) {
-    showError("Gagal copy URL");
+    showErrorToast("Gagal copy URL");
   }
 };
 
 const removeImage = () => {
-  if (disabled.value) return;
+  if (props.disabled) return;
 
   imageUrl.value = "";
   publicId.value = "";
@@ -292,14 +336,14 @@ const removeImage = () => {
 
 .upload-zone {
   position: relative;
-  border: 2px dashed #d1d5db;
-  border-radius: 12px;
-  padding: 32px 20px;
+  border: 2px dashed #e0d4f7;
+  border-radius: 16px;
+  padding: 48px 24px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: #fafafa;
-  min-height: 240px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #faf8ff 0%, #f5f3ff 100%);
+  min-height: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,13 +351,17 @@ const removeImage = () => {
 
 .upload-zone:hover:not(.is-disabled) {
   border-color: #8b5cf6;
-  background: #f5f3ff;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
 }
 
 .upload-zone.is-dragging {
-  border-color: #8b5cf6;
-  background: #ede9fe;
-  transform: scale(1.01);
+  border-color: #7c3aed;
+  border-style: solid;
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  transform: scale(1.02);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.25);
 }
 
 .upload-zone.has-image {
@@ -324,8 +372,9 @@ const removeImage = () => {
 }
 
 .upload-zone.is-disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .file-input-hidden {
@@ -336,46 +385,110 @@ const removeImage = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .upload-icon {
-  color: #8b5cf6;
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
   margin-bottom: 8px;
 }
 
+.upload-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
 .upload-text {
-  font-size: 16px;
-  color: #374151;
+  font-size: 17px;
+  color: #1f2937;
   margin: 0;
+  line-height: 1.5;
 }
 
 .upload-text strong {
-  color: #8b5cf6;
+  color: #7c3aed;
   font-weight: 600;
+  display: block;
+  font-size: 18px;
+  margin-bottom: 4px;
 }
 
 .upload-hint {
   font-size: 14px;
   color: #6b7280;
   margin: 0;
+  padding: 8px 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-browse {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 4px 0;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.btn-browse:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+}
+
+.btn-browse:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-browse:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-browse svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
 }
 
 .progress-bar {
   width: 100%;
-  max-width: 200px;
-  height: 4px;
+  max-width: 240px;
+  height: 6px;
   background: #e5e7eb;
-  border-radius: 2px;
+  border-radius: 6px;
   overflow: hidden;
-  margin-top: 8px;
+  margin-top: 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
-  animation: loading 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed, #6d28d9);
+  border-radius: 6px;
+  animation: loading 1.8s ease-in-out infinite;
 }
 
 @keyframes loading {
@@ -390,8 +503,15 @@ const removeImage = () => {
 .image-preview-wrapper {
   position: relative;
   width: 100%;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.image-preview-wrapper:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .image-preview {
@@ -400,7 +520,7 @@ const removeImage = () => {
   max-height: 400px;
   object-fit: contain;
   display: block;
-  background: #000;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
 }
 
 .image-overlay {
@@ -411,17 +531,17 @@ const removeImage = () => {
   bottom: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.7) 0%,
-    transparent 40%,
-    transparent 60%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(0, 0, 0, 0.8) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(0, 0, 0, 0.8) 100%
   );
   opacity: 0;
   transition: opacity 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px;
+  padding: 20px;
 }
 
 .image-preview-wrapper:hover .image-overlay {
@@ -434,26 +554,28 @@ const removeImage = () => {
 
 .file-name {
   color: white;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .file-url {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
   margin: 0;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .image-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: flex-end;
 }
 
@@ -461,24 +583,28 @@ const removeImage = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
   color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
 }
 
 .btn-action:hover:not(:disabled) {
   background: white;
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-action:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-danger:hover:not(:disabled) {
@@ -489,20 +615,66 @@ const removeImage = () => {
 .error-message {
   color: #ef4444;
   font-size: 14px;
-  margin: 12px 0 0 0;
+  margin: 16px 0 0 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  font-weight: 500;
 }
 
 .error-message::before {
   content: "⚠️";
+  font-size: 16px;
 }
 
 .success-message {
   color: #10b981;
   font-size: 14px;
-  margin: 12px 0 0 0;
-  font-weight: 500;
+  margin: 16px 0 0 0;
+  font-weight: 600;
+  padding: 12px 16px;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dark Mode Support */
+.dark .upload-zone {
+  background: linear-gradient(135deg, #1e1b2e 0%, #27233a 100%);
+  border-color: #3d3456;
+}
+
+.dark .upload-zone:hover:not(.is-disabled) {
+  border-color: #8b5cf6;
+  background: linear-gradient(135deg, #27233a 0%, #2d1b4e 100%);
+}
+
+.dark .upload-zone.is-dragging {
+  background: linear-gradient(135deg, #2d1b4e 0%, #3d2561 100%);
+}
+
+.dark .upload-text {
+  color: #e5e7eb;
+}
+
+.dark .upload-hint {
+  color: #9ca3af;
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark .btn-browse {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.dark .btn-browse:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
 }
 </style>

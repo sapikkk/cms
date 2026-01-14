@@ -1,9 +1,8 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "cd client && npm install && npm run build",
+  "buildCommand": "cd client && npm run build",
+  "installCommand": "cd client && npm install --legacy-peer-deps",
   "outputDirectory": "client/dist",
-  "installCommand": "echo 'Skip root install'",
   "framework": null,
   "rewrites": [
     {
@@ -12,7 +11,7 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://antitesa-api-production.up.railway.app/api/v1"
-  },
-  "regions": ["sin1"]
+    "VITE_API_URL": "https://antitesa-api-production.up.railway.app/api/v1",
+    "NODE_VERSION": "20"
+  }
 }

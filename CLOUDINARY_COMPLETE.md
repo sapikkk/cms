@@ -7,12 +7,14 @@ CloudinaryImageUploader telah berhasil diintegrasikan di **SEMUA form** yang mem
 ### **Cara Upload:**
 
 **1. Click to Upload**
+
 - Klik area upload
 - File browser terbuka
 - Pilih file dari folder mana pun di komputer
 - Upload otomatis ke Cloudinary
 
 **2. Drag & Drop**
+
 - Drag file image dari Finder/Explorer
 - Drop ke upload zone
 - Upload otomatis ke Cloudinary
@@ -22,36 +24,42 @@ CloudinaryImageUploader telah berhasil diintegrasikan di **SEMUA form** yang mem
 ## 📍 Daftar Form yang Sudah Terintegrasi
 
 ### ✅ **1. Page Builder**
+
 - **Path**: `/dashboard/pages/{id}/builder`
 - **Field**: Semua widget dengan image/imageUrl
 - **Folder**: `antitesa/pages/{pageId}/`
 - **Status**: Drag & drop ✅ | Click upload ✅
 
 ### ✅ **2. Product Management**
+
 - **Path**: `/dashboard/products/create` & edit
 - **Field**: Gambar Produk
 - **Folder**: `antitesa/products/`
 - **Status**: Drag & drop ✅ | Click upload ✅
 
 ### ✅ **3. Event Management**
+
 - **Path**: `/dashboard/events/create` & edit
 - **Field**: Cover Image Event
 - **Folder**: `antitesa/events/`
 - **Status**: Drag & drop ✅ | Click upload ✅
 
 ### ✅ **4. Merchandise Store**
+
 - **Path**: `/dashboard/merchandise/create` & edit
 - **Field**: Gambar Merchandise
 - **Folder**: `antitesa/merchandise/`
 - **Status**: Drag & drop ✅ | Click upload ✅
 
 ### ✅ **5. Book Library**
+
 - **Path**: `/dashboard/library/create` & edit
 - **Field**: Cover Buku
 - **Folder**: `antitesa/books/`
 - **Status**: Drag & drop ✅ | Click upload ✅
 
 ### ✅ **6. Fun Facts**
+
 - **Path**: `/dashboard/funfacts/create` & edit
 - **Field**: Gambar (Optional)
 - **Folder**: `antitesa/funfacts/`
@@ -130,6 +138,7 @@ antitesa/
 ## 🔐 Environment Setup Required
 
 **Railway Backend** (untuk production):
+
 ```env
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
@@ -162,14 +171,16 @@ Tambahkan env vars di Railway dashboard untuk mengaktifkan upload di production.
 
 ## 🎉 Summary
 
-**100% Complete!** 
+**100% Complete!**
 
 Semua form yang memiliki field upload image sudah terintegrasi dengan CloudinaryImageUploader. User tidak perlu lagi:
+
 - ❌ Keluar sistem untuk upload image
 - ❌ Manual copy paste URL
 - ❌ Buka Cloudinary dashboard
 
 Cukup:
+
 - ✅ Drag file dari folder
 - ✅ Atau klik untuk browse
 - ✅ Upload otomatis

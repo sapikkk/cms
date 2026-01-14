@@ -2,27 +2,41 @@
   <div class="p-6">
     <!-- Header -->
     <div class="flex items-center gap-4 mb-8">
-      <router-link to="/dashboard/merchandise" class="p-2 bg-white dark:bg-green-900/40 border border-green-200 dark:border-green-800 rounded-lg text-green-600 dark:text-gray-400 hover:text-brand-orange transition-colors">
+      <router-link
+        to="/dashboard/merchandise"
+        class="p-2 bg-white dark:bg-green-900/40 border border-green-200 dark:border-green-800 rounded-lg text-green-600 dark:text-gray-400 hover:text-brand-orange transition-colors"
+      >
         <PhArrowLeft :size="20" />
       </router-link>
       <div>
-        <h1 class="text-3xl font-bold text-text-green dark:text-white flex items-center gap-2">
+        <h1
+          class="text-3xl font-bold text-text-green dark:text-white flex items-center gap-2"
+        >
           <PhTShirt :size="32" weight="duotone" />
-          {{ isEdit ? 'Edit Merchandise' : 'Tambah Merchandise Baru' }}
+          {{ isEdit ? "Edit Merchandise" : "Tambah Merchandise Baru" }}
         </h1>
-        <p class="text-green-500 dark:text-gray-400 mt-1">Lengkapi informasi merchandise</p>
+        <p class="text-green-500 dark:text-gray-400 mt-1">
+          Lengkapi informasi merchandise
+        </p>
       </div>
     </div>
 
     <!-- Form -->
     <form @submit.prevent="saveMerchandise" class="max-w-4xl">
       <!-- Basic Info -->
-      <div class="bg-white dark:bg-green-900/40 rounded-lg p-6 border border-green-200 dark:border-green-800 mb-6">
-        <h2 class="text-lg font-bold text-text-green dark:text-white mb-6">Informasi Dasar</h2>
-        
+      <div
+        class="bg-white dark:bg-green-900/40 rounded-lg p-6 border border-green-200 dark:border-green-800 mb-6"
+      >
+        <h2 class="text-lg font-bold text-text-green dark:text-white mb-6">
+          Informasi Dasar
+        </h2>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Nama Produk</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >Nama Produk</label
+            >
             <input
               v-model="form.name"
               type="text"
@@ -33,7 +47,10 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">SKU (Opsional)</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >SKU (Opsional)</label
+            >
             <input
               v-model="form.sku"
               type="text"
@@ -43,7 +60,10 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Kategori</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >Kategori</label
+            >
             <select
               v-model="form.category"
               required
@@ -59,9 +79,15 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Harga (Rp)</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >Harga (Rp)</label
+            >
             <div class="relative">
-              <span class="absolute left-4 top-3.5 text-green-500 dark:text-gray-400 font-bold">Rp</span>
+              <span
+                class="absolute left-4 top-3.5 text-green-500 dark:text-gray-400 font-bold"
+                >Rp</span
+              >
               <input
                 v-model.number="form.price"
                 type="number"
@@ -74,7 +100,10 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Stok</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >Stok</label
+            >
             <input
               v-model.number="form.stock"
               type="number"
@@ -86,7 +115,10 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Gambar Merchandise</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >Gambar Merchandise</label
+            >
             <CloudinaryImageUploader
               v-model="form.mainImage"
               folder="antitesa/merchandise"
@@ -95,7 +127,10 @@
           </div>
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Deskripsi</label>
+            <label
+              class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2"
+              >Deskripsi</label
+            >
             <textarea
               v-model="form.description"
               rows="3"
@@ -107,9 +142,13 @@
       </div>
 
       <!-- Publishing -->
-      <div class="bg-white dark:bg-green-900/40 rounded-lg p-6 border border-green-200 dark:border-green-800 mb-6">
-        <h2 class="text-lg font-bold text-text-green dark:text-white mb-6">Status</h2>
-        
+      <div
+        class="bg-white dark:bg-green-900/40 rounded-lg p-6 border border-green-200 dark:border-green-800 mb-6"
+      >
+        <h2 class="text-lg font-bold text-text-green dark:text-white mb-6">
+          Status
+        </h2>
+
         <div class="space-y-4">
           <div class="flex items-center gap-4">
             <input
@@ -118,7 +157,11 @@
               id="isActive"
               class="w-5 h-5 text-brand-orange focus:ring-brand-orange rounded"
             />
-            <label for="isActive" class="text-green-700 dark:text-gray-300 font-medium">Aktif (Tampilkan di Katalog)</label>
+            <label
+              for="isActive"
+              class="text-green-700 dark:text-gray-300 font-medium"
+              >Aktif (Tampilkan di Katalog)</label
+            >
           </div>
 
           <div class="flex items-center gap-4">
@@ -128,20 +171,26 @@
               id="isFeatured"
               class="w-5 h-5 text-brand-orange focus:ring-brand-orange rounded"
             />
-            <label for="isFeatured" class="text-green-700 dark:text-gray-300 font-medium">Featured (Tampilkan di Homepage)</label>
+            <label
+              for="isFeatured"
+              class="text-green-700 dark:text-gray-300 font-medium"
+              >Featured (Tampilkan di Homepage)</label
+            >
           </div>
         </div>
       </div>
 
       <!-- Submit -->
-      <div class="flex gap-4 pt-4 border-t border-green-200 dark:border-green-800 mt-8">
+      <div
+        class="flex gap-4 pt-4 border-t border-green-200 dark:border-green-800 mt-8"
+      >
         <button
           type="submit"
           :disabled="loading"
           class="px-6 py-2.5 bg-brand-orange text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 flex items-center gap-2 font-bold shadow-sm"
         >
           <PhFloppyDisk :size="20" weight="fill" />
-          {{ loading ? 'Menyimpan...' : 'Simpan Merchandise' }}
+          {{ loading ? "Menyimpan..." : "Simpan Merchandise" }}
         </button>
         <router-link
           to="/dashboard/merchandise"
@@ -155,56 +204,56 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import CloudinaryImageUploader from '@/components/ui/CloudinaryImageUploader.vue'
-import { PhArrowLeft, PhTShirt, PhFloppyDisk } from '@phosphor-icons/vue'
-import merchandiseService from '@/api/services/merchandise.service'
-import { showToast } from '@/utils/toast'
+import { ref, reactive, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import CloudinaryImageUploader from "@/components/ui/CloudinaryImageUploader.vue";
+import { PhArrowLeft, PhTShirt, PhFloppyDisk } from "@phosphor-icons/vue";
+import merchandiseService from "@/api/services/merchandise.service";
+import { showToast } from "@/utils/toast";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const isEdit = computed(() => !!route.params.id)
-const loading = ref(false)
+const isEdit = computed(() => !!route.params.id);
+const loading = ref(false);
 
 const form = reactive({
-  name: '',
-  slug: '',
-  description: '',
-  sku: '',
+  name: "",
+  slug: "",
+  description: "",
+  sku: "",
   price: 0,
   stock: 0,
-  mainImage: '',
-  category: '',
+  mainImage: "",
+  category: "",
   isActive: true,
-  isFeatured: false
-})
+  isFeatured: false,
+});
 
 const saveMerchandise = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     if (isEdit.value) {
-      await merchandiseService.update(route.params.id, form)
-      showToast.success('Berhasil!', 'Merchandise telah diupdate')
+      await merchandiseService.update(route.params.id, form);
+      showToast.success("Berhasil!", "Merchandise telah diupdate");
     } else {
-      await merchandiseService.create(form)
-      showToast.success('Berhasil!', 'Merchandise baru telah ditambahkan')
+      await merchandiseService.create(form);
+      showToast.success("Berhasil!", "Merchandise baru telah ditambahkan");
     }
-    router.push('/dashboard/merchandise')
+    router.push("/dashboard/merchandise");
   } catch (e) {
-    console.error(e)
-    showToast.error('Gagal!', 'Tidak dapat menyimpan merchandise')
+    console.error(e);
+    showToast.error("Gagal!", "Tidak dapat menyimpan merchandise");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 onMounted(async () => {
   if (isEdit.value) {
     try {
-      const { data } = await merchandiseService.getById(route.params.id)
-      const merch = data.data
+      const { data } = await merchandiseService.getById(route.params.id);
+      const merch = data.data;
       Object.assign(form, {
         name: merch.name,
         slug: merch.slug,
@@ -215,11 +264,11 @@ onMounted(async () => {
         mainImage: merch.mainImage,
         category: merch.category,
         isActive: merch.isActive,
-        isFeatured: merch.isFeatured
-      })
+        isFeatured: merch.isFeatured,
+      });
     } catch (err) {
-      console.error('Error fetching merchandise:', err)
+      console.error("Error fetching merchandise:", err);
     }
   }
-})
+});
 </script>
