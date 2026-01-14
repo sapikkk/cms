@@ -11,5 +11,6 @@
   ],
   "env": {
     "VITE_API_URL": "https://antitesa-api-production.up.railway.app/api/v1"
-  }
+  },
+  "regions": ["sin1"]
 }
