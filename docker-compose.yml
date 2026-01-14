@@ -1,0 +1,109 @@
+# =========================================
+# CoffeeShop Enterprise CMS
+# Docker Compose Configuration
+# =========================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # PostgreSQL Database
+  # ==========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: coffeeshop-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-coffeeshop}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-coffeeshop_secret}
+      POSTGRES_DB: ${DB_NAME:-coffeeshop_cms}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - coffeeshop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-coffeeshop}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Redis Cache (Optional - for future use)
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: coffeeshop-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - coffeeshop-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Backend API Server
+  # ==========================================
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: coffeeshop-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://${DB_USER:-coffeeshop}:${DB_PASSWORD:-coffeeshop_secret}@postgres:5432/${DB_NAME:-coffeeshop_cms}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_minimum_32_characters}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your_refresh_secret_key_minimum_32_characters}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - coffeeshop-network
+    volumes:
+      - api_uploads:/app/uploads
+
+  # ==========================================
+  # Frontend Client
+  # ==========================================
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: coffeeshop-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - coffeeshop-network
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  coffeeshop-network:
+    driver: bridge
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  postgres_data:
+  redis_data:
+  api_uploads:

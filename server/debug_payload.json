@@ -1,0 +1,568 @@
+[
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "HeroBannerCenter 1",
+    "slug": "herobannercenter-1768363507249-0-f4yt392",
+    "sectionType": "HERO",
+    "contentData": {
+      "badgeText": "Marpoyan, Pekanbaru",
+      "title": "Bukan Cuma<br><span class=\"text-orange-500\">Tempat Ngopi</span>",
+      "subtitle": "Library. Workspace. Coffee. Tiga elemen yang bikin lu produktif sambil tetep santai. <b>Antitesa</b> bukan tempat nongkrong biasa.",
+      "buttonText": "Lihat Menu",
+      "secondaryButtonText": "Eksplor Ruang",
+      "features": [
+        {
+          "text": "500+ Buku"
+        },
+        {
+          "text": "High-Speed WiFi"
+        },
+        {
+          "text": "08:00 - 23:00"
+        }
+      ],
+      "componentType": "HeroBannerCenter"
+    },
+    "styleConfig": {},
+    "sortOrder": 0,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "HeroSplitRight 2",
+    "slug": "herosplitright-1768363507249-1-4np798n",
+    "sectionType": "HERO",
+    "contentData": {
+      "badge": "Premium Experience",
+      "headingLine1": "Kopi Bukan",
+      "headingLine2Part1": "Sekadar",
+      "headingLine2Part2": "Minuman",
+      "description": "Ini tentang ritual. Tentang menemukan momen di tengah kesibukan. Tentang menyeduh pikiran sambil menikmati seduhan terbaik.",
+      "features": [
+        {
+          "title": "Single Origin Beans",
+          "subtitle": "Biji kopi pilihan dari petani lokal Indonesia"
+        },
+        {
+          "title": "Manual Brew Methods",
+          "subtitle": "V60, Chemex, French Press - lu pilih, kita seduh"
+        },
+        {
+          "title": "Barista Bersertifikat",
+          "subtitle": "Bukan asal bikin. Setiap cangkir adalah karya"
+        }
+      ],
+      "buttonText": "Eksplor Menu Kopi →",
+      "imageUrl": "",
+      "quoteText": "Kopi yang baik datang dari biji yang baik. Pikiran yang jernih datang dari ruang yang tenang.",
+      "quoteAuthor": "Filosofi Antitesa",
+      "componentType": "HeroSplitRight"
+    },
+    "styleConfig": {},
+    "sortOrder": 1,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "HeroSplitLeft 3",
+    "slug": "herosplitleft-1768363507249-2-fzarks0",
+    "sectionType": "HERO",
+    "contentData": {
+      "badge": "DI JALAN MARPOYAN",
+      "headingLine1": "Ruang Baca.",
+      "headingLine2": "Ruang Kerja.",
+      "headingLine3": "Ruang Pikir.",
+      "description": "Gak cuma sekedar wifi gratisan dan kursi empuk. Di sini lu dapet akses ke ribuan buku, meja kerja yang proper, sama kopi yang bikin otak fresh.",
+      "features": [
+        {
+          "title": "Private Workspace",
+          "subtitle": "Meja individual dengan colokan & lampu baca"
+        },
+        {
+          "title": "Koleksi Buku Kurated",
+          "subtitle": "Dari filosofi sampe self-development"
+        },
+        {
+          "title": "Suasana Tenang",
+          "subtitle": "No drama. No noise. Pure focus."
+        }
+      ],
+      "buttonPrimary": "Book Workspace",
+      "buttonSecondary": "Lihat Virtual Tour",
+      "imageUrl": "",
+      "stats": [
+        {
+          "value": "500+",
+          "label": "Buku"
+        },
+        {
+          "value": "24",
+          "label": "Meja Kerja"
+        },
+        {
+          "value": "100%",
+          "label": "Focus Mode"
+        }
+      ],
+      "componentType": "HeroSplitLeft"
+    },
+    "styleConfig": {},
+    "sortOrder": 2,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "ProductGrid 4",
+    "slug": "productgrid-1768363507249-3-5uh4r43",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "Koleksi <span class=\"text-orange-500\">Terbaik</span> Kami",
+      "subtitle": "Dipilih khusus untuk menemani waktu produktif anda",
+      "limit": 8,
+      "showLink": true,
+      "componentType": "ProductGrid"
+    },
+    "styleConfig": {},
+    "sortOrder": 3,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "NotificationSection 5",
+    "slug": "notificationsection-1768363507249-4-h117bba",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Pengumuman Terbaru",
+      "limit": 5,
+      "componentType": "NotificationSection"
+    },
+    "styleConfig": {},
+    "sortOrder": 4,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "FeatureGrid3 6",
+    "slug": "featuregrid3-1768363507249-5-7chuwej",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "Tiga Pilar <span class=\"text-orange-500\">Antitesa</span>",
+      "subtitle": "Bukan cuma tempat ngopi. Ini ekosistem lengkap buat lu yang pengen produktif sambil tetep nyaman.",
+      "features": [
+        {
+          "title": "Premium Coffee",
+          "description": "Single origin beans, manual brew methods, barista bersertifikat.",
+          "items": [
+            {
+              "text": "Biji kopi dari petani lokal pilihan"
+            },
+            {
+              "text": "V60, Chemex, French Press"
+            }
+          ]
+        },
+        {
+          "title": "Curated Library",
+          "description": "500+ buku pilihan dari filosofi hingga bisnis.",
+          "items": [
+            {
+              "text": "Koleksi klasik & kontemporer"
+            },
+            {
+              "text": "Reading corner nyaman"
+            }
+          ]
+        },
+        {
+          "title": "Pro Workspace",
+          "description": "24 meja kerja dengan WiFi 100 Mbps.",
+          "items": [
+            {
+              "text": "Private & shared workspace"
+            },
+            {
+              "text": "Silent zone"
+            }
+          ]
+        }
+      ],
+      "bottomText": "Tiga elemen ini bukan cuma <em>exist</em>. Mereka <strong>synergize</strong>.",
+      "buttonText": "Experience the Difference →",
+      "componentType": "FeatureGrid3"
+    },
+    "styleConfig": {},
+    "sortOrder": 5,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "FeatureGrid4 7",
+    "slug": "featuregrid4-1768363507249-6-cllc8ub",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "What We Offer",
+      "componentType": "FeatureGrid4"
+    },
+    "styleConfig": {},
+    "sortOrder": 6,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "ContentImageRight 8",
+    "slug": "contentimageright-1768363507249-7-3z8l9je",
+    "sectionType": "TEXT",
+    "contentData": {
+      "badge": "Philosophy",
+      "title": "<span class=\"text-orange-500\">Slow Down,</span> <br/>Think Deep",
+      "description": "Di dunia yang serba cepat, kita tawarkan sesuatu yang berbeda: ruang untuk melambat, berpikir, dan berkembang.",
+      "content": "Setiap detail di Antitesa dirancang untuk mendukung deep work dan meaningful conversation.",
+      "items": [
+        {
+          "text": "Noise level terkontrol"
+        },
+        {
+          "text": "Ergonomic furniture"
+        },
+        {
+          "text": "Natural lighting balance"
+        }
+      ],
+      "buttonText": "Experience It Yourself",
+      "imageUrl": "",
+      "componentType": "ContentImageRight"
+    },
+    "styleConfig": {},
+    "sortOrder": 7,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "ContentImageLeft 9",
+    "slug": "contentimageleft-1768363507249-8-ubdgt1k",
+    "sectionType": "TEXT",
+    "contentData": {
+      "badge": "Our Story",
+      "title": "Lahir dari Kecintaan pada <span class=\"text-orange-500\">Kopi & Buku</span>",
+      "description": "Antitesa dimulai dari pertanyaan sederhana: kenapa gak ada tempat yang combine kopi berkualitas dengan library yang proper?",
+      "content": "Kita percaya ruang mempengaruhi pikiran. Pikiran mempengaruhi karya. Dan karya mengubah dunia.",
+      "buttonText": "Baca Selengkapnya →",
+      "imageUrl": "",
+      "componentType": "ContentImageLeft"
+    },
+    "styleConfig": {},
+    "sortOrder": 8,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "TextBlock 10",
+    "slug": "textblock-1768363507249-9-gv8qkjy",
+    "sectionType": "TEXT",
+    "contentData": {
+      "title": "About Us",
+      "content": "Share your story here...",
+      "componentType": "TextBlock"
+    },
+    "styleConfig": {},
+    "sortOrder": 9,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "Stats3Col 11",
+    "slug": "stats3col-1768363507249-10-7cbbved",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Numbers Speak",
+      "componentType": "Stats3Col"
+    },
+    "styleConfig": {},
+    "sortOrder": 10,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "CTACentered 12",
+    "slug": "ctacentered-1768363507249-11-1p1z38j",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Siap Upgrade <br/><span class=\"text-orange-500\">Pengalaman Ngopi</span> Lu?",
+      "description": "Gak cuma tempat minum kopi. Ini tentang menemukan ruang dimana pikiran lu bisa berkembang.",
+      "stats": [
+        {
+          "value": "500+",
+          "label": "Buku Pilihan"
+        },
+        {
+          "value": "24",
+          "label": "Workspace"
+        },
+        {
+          "value": "4.9",
+          "label": "Rating"
+        }
+      ],
+      "primaryButtonText": "Reservasi Sekarang",
+      "secondaryButtonText": "Lihat Menu",
+      "badges": [
+        {
+          "icon": "star",
+          "text": "4.9/5 dari 300+ reviews"
+        },
+        {
+          "icon": "check",
+          "text": "Reservasi gratis & mudah"
+        }
+      ],
+      "componentType": "CTACentered"
+    },
+    "styleConfig": {},
+    "sortOrder": 11,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "CTASplit 13",
+    "slug": "ctasplit-1768363507249-12-issewmm",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Subscribe Newsletter",
+      "buttonText": "Subscribe",
+      "componentType": "CTASplit"
+    },
+    "styleConfig": {},
+    "sortOrder": 12,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "TestimonialCard 14",
+    "slug": "testimonialcard-1768363507249-13-fq4h3lm",
+    "sectionType": "TEXT",
+    "contentData": {
+      "name": "John Doe",
+      "role": "CEO",
+      "quote": "Outstanding service!",
+      "componentType": "TestimonialCard"
+    },
+    "styleConfig": {},
+    "sortOrder": 13,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "GalleryGrid 15",
+    "slug": "gallerygrid-1768363507249-14-etmn4fe",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "Our Gallery",
+      "componentType": "GalleryGrid"
+    },
+    "styleConfig": {},
+    "sortOrder": 14,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "PricingCard 16",
+    "slug": "pricingcard-1768363507249-15-t6kz823",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Premium",
+      "price": "99K",
+      "period": "month",
+      "componentType": "PricingCard"
+    },
+    "styleConfig": {},
+    "sortOrder": 15,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "FAQSection 17",
+    "slug": "faqsection-1768363507249-16-pwnhib4",
+    "sectionType": "TEXT",
+    "contentData": {
+      "title": "Frequently Asked Questions",
+      "componentType": "FAQSection"
+    },
+    "styleConfig": {},
+    "sortOrder": 16,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "TeamGrid 18",
+    "slug": "teamgrid-1768363507249-17-0e5jzc1",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "Meet The Team",
+      "componentType": "TeamGrid"
+    },
+    "styleConfig": {},
+    "sortOrder": 17,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "NewsletterForm 19",
+    "slug": "newsletterform-1768363507249-18-6akubb7",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Stay Connected",
+      "subtitle": "Get updates",
+      "componentType": "NewsletterForm"
+    },
+    "styleConfig": {},
+    "sortOrder": 18,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "LogoCloud 20",
+    "slug": "logocloud-1768363507249-19-ouwqu75",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "Partners",
+      "componentType": "LogoCloud"
+    },
+    "styleConfig": {},
+    "sortOrder": 19,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "VideoEmbed 21",
+    "slug": "videoembed-1768363507249-20-yga3u2x",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Watch Video",
+      "videoUrl": "",
+      "componentType": "VideoEmbed"
+    },
+    "styleConfig": {},
+    "sortOrder": 20,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "ContactCard 22",
+    "slug": "contactcard-1768363507249-21-yr7o2na",
+    "sectionType": "TEXT",
+    "contentData": {
+      "title": "Get In Touch",
+      "componentType": "ContactCard"
+    },
+    "styleConfig": {},
+    "sortOrder": 21,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "EventsSection 23",
+    "slug": "eventssection-1768363507249-22-owb9i7e",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Lebih dari Sekedar <span class=\"text-orange-500\">Ngopi</span>",
+      "subtitle": "Workshop, book club, dan networking events setiap bulan",
+      "limit": 3,
+      "showLink": true,
+      "componentType": "EventsSection"
+    },
+    "styleConfig": {},
+    "sortOrder": 22,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "FunFactsSection 24",
+    "slug": "funfactssection-1768363507249-23-uew9yqv",
+    "sectionType": "CUSTOM",
+    "contentData": {
+      "title": "Antitesa in Numbers",
+      "subtitle": "Data speaks louder than promises",
+      "limit": 4,
+      "bottomQuote": "Tempat favorit gue buat kerja dan baca.",
+      "quoteAuthor": "Happy Member",
+      "componentType": "FunFactsSection"
+    },
+    "styleConfig": {},
+    "sortOrder": 23,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "LibrarySection 25",
+    "slug": "librarysection-1768363507249-24-6yai4l9",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "badge": "Library & Workspace",
+      "title": "Tempat Otak <span class=\"text-orange-500\">Bekerja</span>",
+      "description": "Koleksi buku pilihan, ruang kerja nyaman, dan atmosfer yang bikin lu betah berjam-jam.",
+      "libraryTitle": "Perpustakaan Kurated",
+      "librarySubtitle": "500+ buku pilihan dari berbagai genre",
+      "libraryFeatures": [
+        {
+          "title": "Filosofi & Pemikiran",
+          "subtitle": "Dari Nietzsche sampai Rumi"
+        },
+        {
+          "title": "Self-Development",
+          "subtitle": "Upgrade diri lewat bacaan berkualitas"
+        }
+      ],
+      "workspaceTitle": "Workspace Premium",
+      "workspaceSubtitle": "24 meja kerja dengan fasilitas lengkap",
+      "workspaceFeatures": [
+        {
+          "title": "Colokan di Setiap Meja",
+          "subtitle": "Charge sepuasnya"
+        },
+        {
+          "title": "High-Speed WiFi",
+          "subtitle": "100 Mbps"
+        }
+      ],
+      "stats": [
+        {
+          "value": "500+",
+          "label": "Koleksi Buku"
+        },
+        {
+          "value": "24",
+          "label": "Workspace Seat"
+        },
+        {
+          "value": "100",
+          "label": "Mbps WiFi"
+        },
+        {
+          "value": "15H",
+          "label": "Open Daily"
+        }
+      ],
+      "buttonText": "Reservasi Workspace →",
+      "componentType": "LibrarySection"
+    },
+    "styleConfig": {},
+    "sortOrder": 24,
+    "isVisible": true
+  },
+  {
+    "pageId": "61131879-1b16-4564-88f4-c7c58f2e9d5b",
+    "name": "MerchandiseSection 26",
+    "slug": "merchandisesection-1768363507249-25-jiprggw",
+    "sectionType": "PRODUCTS",
+    "contentData": {
+      "title": "Bawa Pulang <span class=\"text-orange-500\">Vibe</span>-nya",
+      "subtitle": "Official merch buat lu yang pengen piece of Antitesa at home",
+      "limit": 3,
+      "showLink": true,
+      "componentType": "MerchandiseSection"
+    },
+    "styleConfig": {},
+    "sortOrder": 25,
+    "isVisible": true
+  }
+]

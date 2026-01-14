@@ -1,0 +1,588 @@
+// Prisma Schema untuk CoffeeShop Enterprise CMS
+// Version: 2.1
+// Database: PostgreSQL with JSONB support
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+// ================================
+// ENUMS
+// ================================
+
+enum Role {
+  MASTER_ADMIN  // Level 0 - Absolute Power
+  ADMIN_OWNER   // Level 1 - Business Owner
+  MEDIA_STAFF   // Level 2 - Content Creator
+  USER_PUBLIC   // Level 3 - Website Visitor
+}
+
+enum UnitType {
+  GRAM  // For coffee beans, powder
+  ML    // For liquid ingredients
+  SHOT  // For espresso shots
+  PCS   // For pieces (sugar cubes, etc)
+}
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOCK
+  UNLOCK
+  EXPORT
+  LOGIN
+  LOGOUT
+  PUBLISH
+  UNPUBLISH
+}
+
+// ================================
+// AUTHENTICATION & USER MANAGEMENT
+// ================================
+
+model User {
+  id       String @id @default(uuid())
+  username String @unique
+  email    String @unique
+  password String // Hashed with bcrypt
+
+  // Role & Access Control
+  role Role @default(USER_PUBLIC)
+
+  // Master Lock Mechanism
+  // Jika true, user tidak bisa login/akses API
+  isLocked Boolean @default(false)
+
+  // Profile Information
+  fullName String?
+  avatar   String? // URL to profile picture
+  phone    String?
+
+  // Relations
+  logs         ActivityLog[]
+  createdPages Page[]
+  createdBooks Book[]
+  createdEvents Event[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+}
+
+// ================================
+// PRODUCT INTELLIGENCE (COFFEE)
+// ================================
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String? @db.Text
+  basePrice   Decimal @db.Decimal(10, 2)
+  image       String? // URL gambar utama produk
+  isActive    Boolean @default(true)
+
+  // Inventory Management
+  stock             Int     @default(0)  // -1 for unlimited
+  lowStockThreshold Int     @default(10)
+  isFeatured        Boolean @default(false)
+
+  // Relations
+  categoryId  String
+  category    Category          @relation(fields: [categoryId], references: [id])
+  ingredients Ingredient[]
+  variants    ProductVariant[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isFeatured])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  icon        String? // URL to category icon
+  sortOrder   Int       @default(0)
+  products    Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model Ingredient {
+  id   String @id @default(uuid())
+  name String // e.g. "Arabica Beans", "Caramel Syrup", "Fresh Milk"
+
+  // Takaran (Measurement)
+  amount Decimal // e.g. 18, 20, 250
+  unit   UnitType // e.g. GRAM, ML, SHOT
+
+  // Visual & Costing
+  iconUrl String? // Custom icon uploaded by Media Staff
+  cost    Decimal? @db.Decimal(10, 2) // Cost per unit (untuk hitung HPP)
+
+  // Relation
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model ProductVariant {
+  id       String  @id @default(uuid())
+  name     String // e.g. "Hot", "Ice", "Large", "Extra Shot"
+  priceAdj Decimal @db.Decimal(10, 2) // Price adjustment (+ or -)
+
+  // Relation
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+// ================================
+// DIGITAL LIBRARY (BOOKS)
+// ================================
+
+model Book {
+  id      String @id @default(uuid())
+  title   String
+  author  String
+  summary String @db.Text
+
+  // Media Assets
+  coverUrl   String // Book cover image
+  contentUrl String? // Link to PDF or digital content
+
+  // Pricing
+  price Decimal @default(0) @db.Decimal(10, 2)
+
+  // Style Customization (Full Customize by Media Staff)
+  // Stored as JSON for flexibility
+  // Example: 
+  // {
+  //   "titleFont": "Merriweather",
+  //   "titleSize": "48px",
+  //   "titleColor": "#2C3E50",
+  //   "bgColor": "#F5F5DC",
+  //   "accentColor": "#8B0000",
+  //   "layout": "modern"
+  // }
+  styleConfig Json?
+
+  // Publishing
+  isPublished Boolean @default(false)
+
+  // Landing Page Display
+  isFeatured   Boolean @default(false)
+  displayOrder Int     @default(0)
+  stock        Int     @default(0) // For physical books
+
+  // Relations
+  createdBy String?
+  creator   User?   @relation(fields: [createdBy], references: [id])
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished])
+  @@index([isFeatured])
+}
+
+// ================================
+// CMS CORE (DYNAMIC PAGES)
+// ================================
+
+model Page {
+  id          String  @id @default(uuid())
+  title       String
+  slug        String  @unique // URL Path e.g. "about-us", "promo"
+  isPublished Boolean @default(false)
+
+  // Navigation
+  inNavbar Boolean @default(false) // Show in main menu?
+  navOrder Int     @default(0) // Sort order in menu
+
+  // CORE CMS: Page Structure
+  // Array of sections stored as JSON
+  // Example:
+  // [
+  //   { 
+  //     "type": "HeroBanner", 
+  //     "id": "hero-1",
+  //     "props": { 
+  //       "title": "Welcome to Our Coffee Shop", 
+  //       "subtitle": "Best coffee in town",
+  //       "image": "https://...",
+  //       "ctaText": "Order Now",
+  //       "ctaLink": "/products"
+  //     } 
+  //   },
+  //   { 
+  //     "type": "ProductCatalog", 
+  //     "id": "products-1",
+  //     "props": { 
+  //       "categoryId": "uuid-here",
+  //       "layout": "grid",
+  //       "columns": 3
+  //     } 
+  //   },
+  //   {
+  //     "type": "TextBlock",
+  //     "id": "text-1",
+  //     "props": {
+  //       "content": "<p>Rich text content here...</p>",
+  //       "alignment": "center"
+  //     }
+  //   }
+  // ]
+  // NOTE: Legacy JSON sections field removed in favor of Section relation model
+
+  // SEO Configuration
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  ogImage         String? // Open Graph image for social sharing
+
+  // Relations
+  createdBy String?
+  creator   User?      @relation(fields: [createdBy], references: [id])
+  sections  Section[] // Dynamic sections for this page
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isPublished])
+}
+
+// ================================
+// AUDIT TRAIL & SECURITY
+// ================================
+
+model ActivityLog {
+  id     String         @id @default(uuid())
+  action ActivityAction // CREATE, UPDATE, DELETE, LOCK, etc.
+  entity String // "Product", "Page", "User", "Book"
+
+  // Target Information
+  targetId   String? // ID of the item that was modified
+  targetName String? // Human-readable name of target
+
+  // Change Details
+  // Snapshot of data before & after changes
+  // Example:
+  // {
+  //   "old": { "price": 45000, "isActive": true },
+  //   "new": { "price": 50000, "isActive": true },
+  //   "changes": ["price"]
+  // }
+  details Json?
+
+  // IP & Browser Info
+  ipAddress String?
+  userAgent String?
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Timestamp
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}
+
+// ================================
+// SYSTEM CONFIGURATION
+// ================================
+
+model SystemConfig {
+  id    String @id @default(uuid())
+  key   String @unique // e.g. "theme_primary_color", "site_name", "landing_footer_config"
+  value Json // Flexible value storage
+
+  // Metadata
+  description String?
+  isPublic    Boolean @default(false) // Can be accessed by frontend?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}
+
+// ================================
+// EVENT MANAGEMENT
+// ================================
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  
+  // Event Details
+  eventDate          DateTime
+  location           String?
+  maxParticipants    Int?     // null = unlimited
+  currentParticipants Int     @default(0)
+  registrationDeadline DateTime?
+  
+  // Pricing
+  isFree Boolean @default(true)
+  price  Decimal @default(0) @db.Decimal(10, 2)
+  
+  // Media
+  coverImage String?
+  gallery    Json?    // Array of image URLs
+  
+  // Publishing
+  isPublished Boolean @default(false)
+  isFeatured  Boolean @default(false)
+  
+  // Relations
+  createdBy String?
+  creator   User?   @relation(fields: [createdBy], references: [id])
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([isPublished])
+  @@index([eventDate])
+}
+
+// ================================
+// MERCHANDISE
+// ================================
+
+enum MerchandiseCategory {
+  CLOTHING
+  ACCESSORIES
+  EQUIPMENT
+  GIFT
+  OTHER
+}
+
+model Merchandise {
+  id          String              @id @default(uuid())
+  name        String
+  slug        String              @unique
+  description String?             @db.Text
+  sku         String?             @unique
+  
+  // Pricing & Inventory
+  price  Decimal @db.Decimal(10, 2)
+  stock  Int     @default(0)
+  
+  // Media
+  images    Json?   // Array of image URLs
+  mainImage String? // Primary display image
+  
+  // Categorization
+  category MerchandiseCategory @default(OTHER)
+  
+  // Publishing
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([sku])
+  @@index([category])
+}
+
+// ================================
+// FUN FACTS & ENGAGEMENT
+// ================================
+
+enum FunFactCategory {
+  COFFEE
+  HISTORY
+  HEALTH
+  CULTURE
+  TRIVIA
+  OTHER
+}
+
+model FunFact {
+  id      String          @id @default(uuid())
+  title   String
+  content String          @db.Text
+  image   String?
+  
+  // Categorization
+  category FunFactCategory @default(TRIVIA)
+  
+  // Engagement Metrics
+  viewCount Int @default(0)
+  likeCount Int @default(0)
+  
+  // Publishing
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  
+  // Relations
+  comments Comment[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([isPublished])
+  @@index([category])
+}
+
+model Comment {
+  id String @id @default(uuid())
+  
+  // Content
+  text        String @db.Text
+  authorName  String
+  authorEmail String?
+  
+  // Moderation
+  isApproved Boolean @default(false)
+  isVisible  Boolean @default(true)
+  
+  // Relations
+  funFactId String
+  funFact   FunFact @relation(fields: [funFactId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([funFactId])
+  @@index([isApproved])
+}
+
+// ================================
+// NOTIFICATIONS & ANNOUNCEMENTS
+// ================================
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  URGENT
+}
+
+enum NotificationTarget {
+  ALL
+  CUSTOMERS
+  MEMBERS
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  title   String
+  message String           @db.Text
+  
+  // Type & Priority
+  notificationType NotificationType @default(INFO)
+  priority         Int              @default(0)
+  
+  // Targeting
+  targetRole NotificationTarget @default(ALL)
+  
+  // Display
+  icon      String?
+  actionUrl String?
+  actionText String?
+  
+  // Scheduling
+  startDate DateTime?
+  endDate   DateTime?
+  
+  // Status
+  isActive      Boolean @default(false)
+  isDismissible Boolean @default(true)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([isActive])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+// ================================
+// LANDING PAGE CONFIGURATION
+// ================================
+
+enum SectionType {
+  HERO
+  PRODUCTS
+  BOOKS
+  EVENTS
+  MERCHANDISE
+  FUNFACTS
+  TEXT
+  GALLERY
+  CUSTOM
+}
+
+model Section {
+  id   String      @id @default(uuid())
+  name String      // Human-readable name
+  slug String      @unique
+  
+  // Section Configuration
+  sectionType SectionType
+  contentData Json        // Flexible content based on type
+  styleConfig Json?       // Custom styling
+  
+  // Display
+  isVisible Boolean @default(true)
+  sortOrder Int     @default(0)
+  
+  // Page Assignment (null = homepage)
+  pageId String?
+  page   Page?   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([sectionType])
+  @@index([sortOrder])
+  @@index([pageId])
+}

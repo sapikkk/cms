@@ -1,0 +1,342 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * 🎨 ANTITESA BRAND SYSTEM - Main Stylesheet
+ * ═══════════════════════════════════════════════════════════════════
+ * 
+ * STRUKTUR:
+ * 1. Tailwind Directives
+ * 2. CSS Variables Import
+ * 3. Base Styles
+ * 4. Custom Scrollbar (Brand Themed)
+ * 5. Transitions & Animations
+ * 
+ * STRATEGI WARNA:
+ * - Light Mode: bg-cream-500, text-green-900
+ * - Dark Mode:  bg-green-950, text-cream-500
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+/* Import brand variables (Must be first) */
+@import './_variables.css';
+@import './_transitions.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════════════════════════════════
+   BASE LAYER - Root Styles (using raw values to avoid @apply issues)
+   ══════════════════════════════════════════════════════════════════════ */
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Light Mode Default */
+  background-color: #F9F6EF; /* cream-500 */
+  color: #00140A; /* green-900 */
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Mode Body */
+.dark body,
+html.dark body {
+  background-color: #000A05; /* green-950 */
+  color: #FFFFFF; /* Pure White */
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #00140A; /* green-900 */
+  font-weight: 600;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #FFFFFF; /* Pure White */
+}
+
+/* Links */
+a {
+  color: #005229; /* green-600 */
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #FF6600; /* orange-500 */
+}
+
+.dark a {
+  color: #33855C; /* green-400 */
+}
+
+.dark a:hover {
+  color: #FF8533; /* orange-400 */
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #FF6600, 0 0 0 4px rgba(255, 102, 0, 0.2);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CUSTOM SCROLLBAR - Brand Themed
+   ══════════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Light Mode Scrollbar */
+::-webkit-scrollbar-thumb {
+  background: #006633; /* green-500 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF6600; /* orange-500 */
+}
+
+/* Dark Mode Scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: #33855C; /* green-400 */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #FF6600; /* orange-500 */
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #006633 transparent;
+}
+
+.dark * {
+  scrollbar-color: #33855C transparent;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COMPONENT LAYER - Reusable UI Patterns
+   ══════════════════════════════════════════════════════════════════════ */
+@layer components {
+  /* Card Component */
+  .card {
+    background-color: #FEFEFB; /* cream-100 */
+    border: 1px solid #CCE0D6; /* green-100 */
+    border-radius: 0.75rem;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+
+  .dark .card {
+    background-color: #00140A; /* green-900 */
+    border-color: #002914; /* green-800 */
+  }
+
+  .card-elevated {
+    background-color: #FEFEFB;
+    border: 1px solid #CCE0D6;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 102, 51, 0.1), 0 2px 4px -2px rgba(0, 102, 51, 0.1);
+  }
+
+  .card-elevated:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 102, 51, 0.1), 0 4px 6px -4px rgba(0, 102, 51, 0.1);
+  }
+
+  /* Button Base */
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #FF6600, 0 0 0 4px rgba(255, 102, 0, 0.2);
+  }
+
+  .btn-primary {
+    background-color: #FF6600; /* orange-500 */
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #CC5200; /* orange-600 */
+  }
+
+  .btn-secondary {
+    background-color: #006633; /* green-500 */
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #005229; /* green-600 */
+  }
+
+  .btn-outline {
+    border: 1px solid #66A385; /* green-300 */
+    color: #003D1F; /* green-700 */
+    background-color: transparent;
+  }
+
+  .btn-outline:hover {
+    background-color: #E6F0EB; /* green-50 */
+  }
+
+  .dark .btn-outline {
+    border-color: #003D1F; /* green-700 */
+    color: #66A385; /* green-300 */
+  }
+
+  .dark .btn-outline:hover {
+    background-color: #002914; /* green-800 */
+  }
+
+  /* Input Base */
+  .input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #FEFEFB; /* cream-100 */
+    border: 1px solid #99C2AD; /* green-200 */
+    color: #00140A; /* green-900 */
+    transition: all 0.2s;
+  }
+
+  .input::placeholder {
+    color: #33855C; /* green-400 */
+  }
+
+  .input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #FF6600;
+  }
+
+  .dark .input {
+    background-color: #000A05; /* green-950 */
+    border-color: #003D1F; /* green-700 */
+    color: #FEFEFB; /* cream-100 */
+  }
+
+  .dark .input::placeholder {
+    color: #006633; /* green-500 */
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .badge-orange {
+    background-color: #FFE0CC; /* orange-100 */
+    color: #662900; /* orange-800 */
+  }
+
+  .dark .badge-orange {
+    background-color: rgba(255, 102, 0, 0.2);
+    color: #FFA366; /* orange-300 */
+  }
+
+  .badge-green {
+    background-color: #CCE0D6; /* green-100 */
+    color: #002914; /* green-800 */
+  }
+
+  .dark .badge-green {
+    background-color: rgba(0, 102, 51, 0.3);
+    color: #66A385; /* green-300 */
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   UTILITIES LAYER - Custom Utilities
+   ══════════════════════════════════════════════════════════════════════ */
+@layer utilities {
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(to right, #FF6600, #006633);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Brand background patterns */
+  .bg-pattern-dots {
+    background-image: radial-gradient(circle, #006633 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .dark .bg-pattern-dots {
+    background-image: radial-gradient(circle, #33855C 1px, transparent 1px);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   VUE TRANSITIONS
+   ══════════════════════════════════════════════════════════════════════ */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+.scale-enter-active,
+.scale-leave-active {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  transform: scale(0.95);
+  opacity: 0;
+}
