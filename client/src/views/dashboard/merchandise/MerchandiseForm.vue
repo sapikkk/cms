@@ -86,18 +86,12 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Main Image URL</label>
-            <div class="flex gap-2">
-              <input
-                v-model="form.mainImage"
-                type="url"
-                class="flex-1 px-4 py-3 border border-green-300 dark:border-green-700 rounded-lg bg-cream-100 dark:bg-green-950 text-green-900 dark:text-white focus:ring-2 focus:ring-brand-orange outline-none"
-                placeholder="https://..."
-              />
-              <div v-if="form.mainImage" class="w-12 h-12 rounded-lg border border-green-200 dark:border-green-800 overflow-hidden">
-                <img :src="form.mainImage" alt="Preview" class="w-full h-full object-cover" />
-              </div>
-            </div>
+            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Gambar Merchandise</label>
+            <CloudinaryImageUploader
+              v-model="form.mainImage"
+              folder="antitesa/merchandise"
+              hint="Upload gambar merchandise (PNG, JPG, Max 10MB)"
+            />
           </div>
 
           <div class="md:col-span-2">
@@ -163,6 +157,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CloudinaryImageUploader from '@/components/ui/CloudinaryImageUploader.vue'
 import { PhArrowLeft, PhTShirt, PhFloppyDisk } from '@phosphor-icons/vue'
 import merchandiseService from '@/api/services/merchandise.service'
 import { showToast } from '@/utils/toast'

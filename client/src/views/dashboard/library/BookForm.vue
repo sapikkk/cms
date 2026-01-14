@@ -63,19 +63,12 @@
           </div>
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">URL Cover</label>>
-             <div class="flex gap-4">
-                <input
-                  v-model="form.coverUrl"
-                  type="url"
-                  class="flex-1 px-4 py-3 border border-green-300 dark:border-green-700 rounded-lg bg-cream-100 dark:bg-green-950 text-green-900 dark:text-white focus:ring-2 focus:ring-brand-orange focus:border-transparent outline-none transition-all"
-                  placeholder="https://..."
-                />
-                <div class="w-20 h-28 bg-cream-200 dark:bg-green-800 rounded-lg border border-green-200 dark:border-green-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  <img v-if="form.coverUrl" :src="form.coverUrl" class="w-full h-full object-cover" alt="Preview" />
-                  <PhImage v-else :size="32" class="text-green-200 dark:text-white0" />
-                </div>
-             </div>
+            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Cover Buku</label>
+            <CloudinaryImageUploader
+              v-model="form.coverUrl"
+              folder="antitesa/books"
+              hint="Upload cover buku (PNG, JPG, Max 10MB)"
+            />
           </div>
           
           <div class="md:col-span-2">
@@ -165,7 +158,8 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { 
+import CloudinaryImageUploader from '@/components/ui/CloudinaryImageUploader.vue'
+import {
   PhArrowLeft, PhBook, PhInfo, PhPalette, PhImage, PhUser, PhTextT, PhFloppyDisk 
 } from '@phosphor-icons/vue'
 import bookService from '@/api/services/book.service'

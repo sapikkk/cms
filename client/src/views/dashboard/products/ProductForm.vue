@@ -74,18 +74,12 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">URL Gambar</label>>
-            <div class="flex gap-2">
-               <input
-                v-model="form.image"
-                type="url"
-                class="flex-1 px-4 py-3 border border-green-300 dark:border-green-700 rounded-lg bg-cream-100 dark:bg-green-950 text-green-900 dark:text-white focus:ring-2 focus:ring-brand-orange focus:border-transparent outline-none transition-all"
-                placeholder="https://..."
-              />
-              <div v-if="form.image" class="w-12 h-12 rounded-lg border border-green-200 dark:border-green-800 overflow-hidden flex-shrink-0">
-                <img :src="form.image" alt="Preview" class="w-full h-full object-cover" />
-              </div>
-            </div>
+            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Gambar Produk</label>
+            <CloudinaryImageUploader
+              v-model="form.image"
+              folder="antitesa/products"
+              hint="Upload gambar produk (PNG, JPG, Max 10MB)"
+            />
           </div>
         </div>
 

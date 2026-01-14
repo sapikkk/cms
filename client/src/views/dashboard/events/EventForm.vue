@@ -76,18 +76,12 @@
           </div>
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Cover Image URL</label>
-            <div class="flex gap-2">
-              <input
-                v-model="form.coverImage"
-                type="url"
-                class="flex-1 px-4 py-3 border border-green-300 dark:border-green-700 rounded-lg bg-cream-100 dark:bg-green-950 text-green-900 dark:text-white focus:ring-2 focus:ring-brand-orange outline-none"
-                placeholder="https://..."
-              />
-              <div v-if="form.coverImage" class="w-16 h-16 rounded-lg border border-green-200 dark:border-green-800 overflow-hidden">
-                <img :src="form.coverImage" alt="Preview" class="w-full h-full object-cover" />
-              </div>
-            </div>
+            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Cover Image Event</label>
+            <CloudinaryImageUploader
+              v-model="form.coverImage"
+              folder="antitesa/events"
+              hint="Upload cover image event (PNG, JPG, Max 10MB)"
+            />
           </div>
 
           <div class="md:col-span-2">
@@ -183,6 +177,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CloudinaryImageUploader from '@/components/ui/CloudinaryImageUploader.vue'
 import { PhArrowLeft, PhCalendar, PhInfo, PhFloppyDisk } from '@phosphor-icons/vue'
 import eventService from '@/api/services/event.service'
 import { showToast } from '@/utils/toast'

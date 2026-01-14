@@ -44,12 +44,11 @@
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Image URL (Opsional)</label>
-            <input
+            <label class="block text-sm font-bold text-green-700 dark:text-gray-300 mb-2">Gambar (Opsional)</label>
+            <CloudinaryImageUploader
               v-model="form.image"
-              type="url"
-              class="w-full px-4 py-3 border border-green-300 dark:border-green-700 rounded-lg bg-cream-100 dark:bg-green-950 text-green-900 dark:text-white focus:ring-2 focus:ring-brand-orange outline-none"
-              placeholder="https://..."
+              folder="antitesa/funfacts"
+              hint="Upload gambar fun fact (PNG, JPG, Max 10MB)"
             />
           </div>
 
@@ -102,6 +101,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CloudinaryImageUploader from '@/components/ui/CloudinaryImageUploader.vue'
 import { PhArrowLeft, PhLightning, PhFloppyDisk } from '@phosphor-icons/vue'
 import funfactService from '@/api/services/funfact.service'
 import { showToast } from '@/utils/toast'
