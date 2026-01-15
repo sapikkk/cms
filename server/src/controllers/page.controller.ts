@@ -34,6 +34,35 @@ export const getPages = async (req: Request, res: Response, next: NextFunction) 
   }
 }
 
+/**
+ * Public endpoint for fetching navbar pages (no auth required)
+ * Used by storefront navbar to display menu items
+ */
+export const getNavbarPages = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const pages = await prisma.page.findMany({
+      where: {
+        isPublished: true,
+        inNavbar: true
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        navOrder: true
+      },
+      orderBy: { navOrder: 'asc' }
+    })
+
+    res.json({
+      success: true,
+      data: pages
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const getPageById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params

@@ -124,22 +124,25 @@ const loadNavbarContent = async () => {
       console.log('[Navbar] Using default logo/settings')
     }
 
-    // 2. Load Dynamic Pages for Menu (pages with inNavbar=true)
-    const pagesRes = await pageService.getAll({ inNavbar: true, published: true })
-    if (pagesRes.data.success && pagesRes.data.data) {
-      // Transform Pages to Menu Items
-      const dynamicLinks = pagesRes.data.data
-        .filter(page => page.inNavbar && page.isPublished) // Double-check filtering
-        .map(page => ({
-          label: page.title,
-          link: page.slug === 'index' ? '/' : `/${page.slug}`, // 'index' maps to /
-          isActive: true,
-          navOrder: page.navOrder || 0
-        }))
-        .sort((a, b) => a.navOrder - b.navOrder)
-      
-      navbarContent.value.menuItems = dynamicLinks
-      console.log(`[Navbar] Loaded ${dynamicLinks.length} menu items from database`)
+    // 2. Load Dynamic Pages for Menu (pages with inNavbar=true) - now using public endpoint
+    try {
+      const pagesRes = await pageService.getNavbarPages()
+      if (pagesRes.data.success && pagesRes.data.data) {
+        // Transform Pages to Menu Items
+        const dynamicLinks = pagesRes.data.data
+          .map(page => ({
+            label: page.title,
+            link: page.slug === 'index' ? '/' : `/${page.slug}`, // 'index' maps to /
+            isActive: true,
+            navOrder: page.navOrder || 0
+          }))
+          .sort((a, b) => a.navOrder - b.navOrder)
+        
+        navbarContent.value.menuItems = dynamicLinks
+        console.log(`[Navbar] Loaded ${dynamicLinks.length} menu items from database`)
+      }
+    } catch (pagesError) {
+      console.warn('[Navbar] Could not load dynamic pages, using fallback menu:', pagesError)
     }
   } catch (error) {
     console.error('[Navbar] Error loading content:', error)

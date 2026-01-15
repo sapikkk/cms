@@ -243,7 +243,26 @@ const saveMerchandise = async () => {
     router.push("/dashboard/merchandise");
   } catch (e) {
     console.error(e);
-    showToast.error("Gagal!", "Tidak dapat menyimpan merchandise");
+
+    // Handle specific error codes
+    let errorMessage = "Tidak dapat menyimpan merchandise";
+
+    if (e.response?.status === 409) {
+      const msg = e.response.data?.message || "";
+      if (msg.toLowerCase().includes("sku")) {
+        errorMessage = `SKU "${form.sku}" sudah digunakan`;
+      } else if (msg.toLowerCase().includes("slug")) {
+        errorMessage = `Slug "${form.slug}" sudah ada`;
+      } else if (msg.toLowerCase().includes("name")) {
+        errorMessage = `Nama "${form.name}" sudah ada`;
+      } else {
+        errorMessage = "Data sudah ada. Gunakan nama/SKU yang berbeda";
+      }
+    } else if (e.response?.data?.message) {
+      errorMessage = e.response.data.message;
+    }
+
+    showToast.error("Gagal!", errorMessage);
   } finally {
     loading.value = false;
   }

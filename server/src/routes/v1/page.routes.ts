@@ -13,6 +13,8 @@ const router = Router()
 
 // Public routes
 router.get('/slug/:slug', pageController.getPageBySlug)
+// Public navbar pages (for storefront menu without auth)
+router.get('/navbar', pageController.getNavbarPages)
 
 // Protected routes
 router.use(authenticate)

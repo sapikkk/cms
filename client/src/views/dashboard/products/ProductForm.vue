@@ -399,19 +399,47 @@ const removeCategory = async (id) => {
 };
 
 const saveProduct = async () => {
+  if (!form.categoryId) {
+    showToast.error("Gagal!", "Kategori produk harus dipilih");
+    return;
+  }
+
   loading.value = true;
   try {
+    // Generate slug from name
+    const slug = form.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    const payload = {
+      ...form,
+      slug,
+      // Sanitize image: send undefined if empty string to pass Zod optional/union validation
+      image: form.image || undefined, 
+      // Ensure basePrice is number
+      basePrice: Number(form.basePrice)
+    };
+
     if (isEdit.value) {
-      await productService.update(route.params.id, form);
+      // For update, exclude slug if you don't want to change it, or include it. 
+      // Usually slug update is sensitive, but let's include it for consistency with schema 
+      // or check if backend allows partial update without slug.
+      // DTO: UpdateProductSchema extends CreateProductSchema (partial) but adds ID.
+      // So optional fields are optional.
+      await productService.update(route.params.id, payload);
       showToast.success("Berhasil!", "Produk telah diupdate");
     } else {
-      await productService.create(form);
+      await productService.create(payload);
       showToast.success("Berhasil!", "Produk baru telah ditambahkan");
     }
     router.push("/dashboard/products");
   } catch (e) {
     console.error(e);
-    showToast.error("Gagal!", "Tidak dapat menyimpan produk");
+    const msg = e.response?.data?.message || "Tidak dapat menyimpan produk";
+    showToast.error("Gagal!", msg);
   } finally {
     loading.value = false;
   }

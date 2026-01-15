@@ -95,6 +95,13 @@ export default {
     },
 
     /**
+     * Get published pages for navbar
+     */
+    getNavbarPages() {
+        return axiosClient.get('/pages/navbar')
+    },
+
+    /**
      * Duplicate page
      */
     duplicate(id) {

@@ -336,13 +336,13 @@ const removeImage = () => {
 
 .upload-zone {
   position: relative;
-  border: 2px dashed #e0d4f7;
+  border: 2px dashed #ffd4b3;
   border-radius: 16px;
   padding: 48px 24px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(135deg, #faf8ff 0%, #f5f3ff 100%);
+  transition: all 0.3s ease;
+  background: #f9f6ef;
   min-height: 280px;
   display: flex;
   align-items: center;
@@ -350,18 +350,16 @@ const removeImage = () => {
 }
 
 .upload-zone:hover:not(.is-disabled) {
-  border-color: #8b5cf6;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
-  transform: translateY(-2px);
+  border-color: #ff6600;
+  background: #fff5eb;
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.1);
 }
 
 .upload-zone.is-dragging {
-  border-color: #7c3aed;
+  border-color: #006633;
   border-style: solid;
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-  transform: scale(1.02);
-  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.25);
+  background: #e6f4ea;
+  box-shadow: 0 4px 12px rgba(0, 102, 51, 0.1);
 }
 
 .upload-zone.has-image {
@@ -394,13 +392,13 @@ const removeImage = () => {
 .upload-icon {
   width: 72px;
   height: 72px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: #ff6600;
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
   margin-bottom: 8px;
 }
 
@@ -417,7 +415,7 @@ const removeImage = () => {
 }
 
 .upload-text strong {
-  color: #7c3aed;
+  color: #006633;
   font-weight: 600;
   display: block;
   font-size: 18px;
@@ -439,26 +437,25 @@ const removeImage = () => {
   align-items: center;
   gap: 10px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: #ff6600;
   color: white;
   border: none;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   margin: 4px 0;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2);
 }
 
 .btn-browse:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  background: #cc5200;
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
 }
 
 .btn-browse:active:not(:disabled) {
-  transform: translateY(0);
+  background: #994000;
 }
 
 .btn-browse:disabled {
@@ -486,18 +483,8 @@ const removeImage = () => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #7c3aed, #6d28d9);
+  background: #ff6600;
   border-radius: 6px;
-  animation: loading 1.8s ease-in-out infinite;
-}
-
-@keyframes loading {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
 }
 
 .image-preview-wrapper {
@@ -510,8 +497,7 @@ const removeImage = () => {
 }
 
 .image-preview-wrapper:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .image-preview {
@@ -520,7 +506,7 @@ const removeImage = () => {
   max-height: 400px;
   object-fit: contain;
   display: block;
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  background: #1f2937;
 }
 
 .image-overlay {
@@ -529,13 +515,7 @@ const removeImage = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.8) 0%,
-    transparent 30%,
-    transparent 70%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
+  background: rgba(0, 0, 0, 0.7);
   opacity: 0;
   transition: opacity 0.3s ease;
   display: flex;
@@ -597,7 +577,6 @@ const removeImage = () => {
 
 .btn-action:hover:not(:disabled) {
   background: white;
-  transform: scale(1.08);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -647,17 +626,17 @@ const removeImage = () => {
 
 /* Dark Mode Support */
 .dark .upload-zone {
-  background: linear-gradient(135deg, #1e1b2e 0%, #27233a 100%);
-  border-color: #3d3456;
+  background: #2d1f1a;
+  border-color: #664422;
 }
 
 .dark .upload-zone:hover:not(.is-disabled) {
-  border-color: #8b5cf6;
-  background: linear-gradient(135deg, #27233a 0%, #2d1b4e 100%);
+  border-color: #ff6600;
+  background: #3d2920;
 }
 
 .dark .upload-zone.is-dragging {
-  background: linear-gradient(135deg, #2d1b4e 0%, #3d2561 100%);
+  background: #4d3325;
 }
 
 .dark .upload-text {
@@ -671,10 +650,10 @@ const removeImage = () => {
 }
 
 .dark .btn-browse {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  background: #ff6600;
 }
 
 .dark .btn-browse:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  background: #cc5200;
 }
 </style>
