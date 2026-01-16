@@ -38,11 +38,13 @@ router.get("/check", (req, res) => {
     config.cloudinary.apiKey &&
     config.cloudinary.apiSecret
   );
-  
+
   res.json({
     success: true,
     cloudinaryConfigured,
-    cloudName: config.cloudinary.cloudName ? `${config.cloudinary.cloudName.substring(0, 3)}***` : null,
+    cloudName: config.cloudinary.cloudName
+      ? `${config.cloudinary.cloudName.substring(0, 3)}***`
+      : null,
     corsOrigin: config.cors.origin,
   });
 });
