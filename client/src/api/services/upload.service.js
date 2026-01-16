@@ -13,6 +13,7 @@ export const uploadToCloudinary = async (formData) => {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
+        timeout: 60000, // 60 seconds for upload
     })
     return response.data.data
 }

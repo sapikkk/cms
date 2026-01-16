@@ -260,12 +260,17 @@ const uploadFile = async (file) => {
     }, 3000);
   } catch (err) {
     console.error("Upload error:", err);
+    console.error("Error response:", err.response);
+    console.error("Error request:", err.request);
+    console.error("Error config:", err.config);
 
     // Better error messages
     let errorMessage = "Gagal mengupload image";
 
     if (err.response) {
       const status = err.response.status;
+      console.error("Response status:", status);
+      console.error("Response data:", err.response.data);
       if (status === 401) {
         errorMessage = "Anda harus login terlebih dahulu untuk upload gambar";
       } else if (status === 404) {
@@ -273,9 +278,16 @@ const uploadFile = async (file) => {
           "Endpoint upload tidak ditemukan. Pastikan server sudah berjalan";
       } else if (status === 413) {
         errorMessage = "Ukuran file terlalu besar";
+      } else if (status === 500) {
+        errorMessage =
+          err.response.data?.message ||
+          "Server error - cek Cloudinary config di Railway";
       } else if (err.response.data?.message) {
         errorMessage = err.response.data.message;
       }
+    } else if (err.code === "ECONNABORTED") {
+      errorMessage =
+        "Upload timeout - file mungkin terlalu besar atau koneksi lambat";
     } else if (err.request) {
       errorMessage =
         "Tidak dapat terhubung ke server. Cek koneksi internet Anda";

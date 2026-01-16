@@ -7,6 +7,7 @@ import { Router } from "express";
 import { UploadController } from "@controllers/upload.controller";
 import { authenticate } from "@middlewares/auth.middleware";
 import multer from "multer";
+import { config } from "@config/env";
 
 const router = Router();
 
@@ -24,6 +25,26 @@ const upload = multer({
       cb(new Error("Only image files are allowed"));
     }
   },
+});
+
+/**
+ * @route   GET /api/v1/upload/check
+ * @desc    Check if Cloudinary is configured (no auth required for debugging)
+ * @access  Public
+ */
+router.get("/check", (req, res) => {
+  const cloudinaryConfigured = !!(
+    config.cloudinary.cloudName &&
+    config.cloudinary.apiKey &&
+    config.cloudinary.apiSecret
+  );
+  
+  res.json({
+    success: true,
+    cloudinaryConfigured,
+    cloudName: config.cloudinary.cloudName ? `${config.cloudinary.cloudName.substring(0, 3)}***` : null,
+    corsOrigin: config.cors.origin,
+  });
 });
 
 // All upload routes require authentication
