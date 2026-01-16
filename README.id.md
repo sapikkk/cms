@@ -1121,3 +1121,408 @@ npm run dev
 ⏳ Troubleshooting & FAQ
 ⏳ Lisensi & Kontak
 
+---
+
+## 🔒 Protokol Keamanan & Kepatuhan
+
+ANTITESA mengimplementasikan praktik keamanan tingkat enterprise untuk melindungi data sensitif dan memastikan integritas sistem.
+
+### Fitur Keamanan Utama
+
+#### 1. **Autentikasi & Otorisasi**
+- **JWT dengan Refresh Token Rotation**: Access token berumur pendek (default 7 hari), refresh token untuk perpanjangan tanpa login ulang
+- **Bcrypt Password Hashing**: 10 rounds (konfigurasi via `BCRYPT_SALT_ROUNDS`), salt per-password
+- **Master Lock Mechanism**: Master Admin dapat membekukan akun mana pun secara instan saat deteksi aktivitas mencurigakan
+
+#### 2. **Perlindungan API**
+- **Rate Limiting**: 100 request per 15 menit per IP (dapat dikonfigurasi per role)
+- **CORS**: Whitelist origin yang ketat, mencegah akses cross-origin tidak sah
+- **Helmet.js**: 15+ HTTP security headers (CSP, XSS Protection, HSTS, No-Sniff)
+- **Input Validation**: Schema validation dengan Zod pada setiap endpoint
+
+#### 3. **Audit & Compliance**
+- **Activity Log Lengkap**: Setiap aksi CRUD dicatat dengan timestamp, user, IP, dan snapshot data
+- **Immutable Logs**: Tabel ActivityLog adalah append-only (tidak ada UPDATE/DELETE)
+- **Data Retention**: Log disimpan selama 365 hari (konfigurasi custom tersedia)
+
+#### 4. **Keamanan Data**
+- **Database Connection Pooling**: Mencegah connection exhaustion attacks
+- **Prepared Statements**: Prisma ORM otomatis mencegah SQL injection
+- **File Upload Sanitization**: Validasi MIME type, size limit, dan file extension
+- **Secrets Management**: Environment variables, tidak di-hardcode dalam kode
+
+### Best Practices Keamanan
+
+```bash
+# Generate strong JWT secrets
+openssl rand -base64 32
+
+# Rotasi secrets berkala (recommended: 90 hari)
+# Update di production environment tanpa downtime
+
+# Audit dependencies untuk vulnerabilities
+npm audit
+npm audit fix
+
+# Scan dengan Snyk (jika terpasang)
+snyk test
+```
+
+---
+
+## 🚀 Strategi Deployment
+
+### Deployment ke Railway (Platform-as-a-Service)
+
+**Prasyarat**: Akun Railway + GitHub repository terhubung
+
+**Langkah Deployment**:
+
+1. **Install Railway CLI**:
+```bash
+npm install -g @railway/cli
+```
+
+2. **Login ke Railway**:
+```bash
+railway login
+```
+
+3. **Inisialisasi project**:
+```bash
+cd server
+railway init
+```
+
+4. **Set environment variables** di Railway Dashboard:
+   - `DATABASE_URL` (dari Railway PostgreSQL addon)
+   - `JWT_SECRET`, `JWT_REFRESH_SECRET`
+   - `CLOUDINARY_*` (jika pakai Cloudinary)
+   - `CORS_ORIGIN` (URL frontend production)
+
+5. **Deploy**:
+```bash
+railway up
+```
+
+6. **Monitoring**:
+```bash
+railway logs
+railway status
+```
+
+### Deployment ke Vercel (Frontend)
+
+**Langkah 1**: Install Vercel CLI
+```bash
+npm install -g vercel
+```
+
+**Langkah 2**: Deploy dari direktori `client`
+```bash
+cd client
+vercel
+```
+
+**Langkah 3**: Set environment variables di Vercel Dashboard:
+- `VITE_API_BASE_URL` → URL backend Railway
+- `VITE_APP_NAME`
+- `VITE_STORAGE_BASE_URL`
+
+**Langkah 4**: Production deployment
+```bash
+vercel --prod
+```
+
+### Deployment Docker ke VPS
+
+**Langkah 1**: Setup VPS (Ubuntu 22.04 recommended)
+```bash
+# Install Docker & Docker Compose
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+# Install Docker Compose
+sudo apt install docker-compose-plugin
+```
+
+**Langkah 2**: Clone repository di VPS
+```bash
+git clone https://github.com/sapikkk/cms.git
+cd cms
+```
+
+**Langkah 3**: Setup environment variables
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+# Edit file .env sesuai konfigurasi production
+```
+
+**Langkah 4**: Deploy dengan Docker Compose
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+**Langkah 5**: Setup Nginx reverse proxy (untuk SSL)
+```nginx
+server {
+    listen 80;
+    server_name antitesa.com;
+
+    location / {
+        proxy_pass http://localhost:5173;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+**Langkah 6**: Aktifkan SSL dengan Certbot
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d antitesa.com
+```
+
+---
+
+## 📊 Performa & Monitoring
+
+### Optimisasi Performa
+
+**Frontend**:
+- ✅ Code splitting dengan Vue Router lazy loading
+- ✅ Tree-shaking dengan Vite
+- ✅ Image optimization via Cloudinary CDN
+- ✅ Gzip/Brotli compression
+
+**Backend**:
+- ✅ Database indexing pada kolom yang sering di-query
+- ✅ Connection pooling (PgBouncer untuk serverless)
+- ✅ Response caching untuk endpoint read-heavy (Redis ready)
+- ✅ Pagination untuk list endpoints
+
+### Monitoring Tools (Recommended untuk Production)
+
+| Tool | Purpose | Integration |
+|------|---------|-------------|
+| **Sentry** | Error tracking & performance monitoring | SDK tersedia untuk Vue + Express |
+| **New Relic** | APM (Application Performance Monitoring) | Node.js agent + browser monitoring |
+| **Datadog** | Infrastructure & application monitoring | Docker integration |
+| **Uptime Robot** | Uptime monitoring (API health checks) | Webhook alerts |
+| **LogRocket** | Frontend session replay | Vue plugin |
+
+---
+
+## 🗺️ Roadmap & Pengembangan Masa Depan
+
+### ✅ Selesai (v2.1.0 - Q4 2025)
+
+- [x] Core CMS dengan dynamic page builder
+- [x] Manajemen produk dengan pelacakan bahan
+- [x] Modul perpustakaan digital (Books)
+- [x] Manajemen events & merchandise
+- [x] Role-based access control (4-tier)
+- [x] Sistem audit trail
+- [x] Fitur keamanan Master Lock
+- [x] Integrasi Cloudinary CDN
+- [x] Dashboard admin responsif
+- [x] Containerization Docker
+- [x] CI/CD GitHub Actions
+
+### 🚧 Dalam Pengerjaan (v2.2.0 - Q1 2026)
+
+- [ ] **Unit Test Coverage**: Mencapai 80%+ test coverage (Jest)
+- [ ] **E2E Testing**: Implementasi Cypress test untuk alur user kritis
+- [ ] **Redis Caching**: Integrasi Redis untuk session storage dan rate limiting
+- [ ] **Advanced Analytics**: Widget dashboard untuk tren penjualan, produk populer
+- [ ] **Notifikasi Email**: Integrasi SMTP untuk konfirmasi order, alert akun
+- [ ] **Alert Inventori**: Notifikasi low stock untuk produk dan bahan
+
+### 📅 Direncanakan (v2.3.0 - Q2 2026)
+
+- [ ] **Shopping Cart & Checkout**: Fungsionalitas e-commerce untuk storefront publik
+- [ ] **Integrasi Payment Gateway**: Midtrans/Xendit untuk pasar Indonesia
+- [ ] **Manajemen Order**: Workflow pemrosesan order admin
+- [ ] **Akun Customer**: Registrasi user, riwayat order, poin loyalitas
+- [ ] **Dukungan Multi-bahasa**: Implementasi i18n (Indonesia, English)
+- [ ] **Mobile App (PWA)**: Konversi Progressive Web App
+
+### 🔮 Visi Masa Depan (v3.0.0 - Q3-Q4 2026)
+
+- [ ] **Mobile Native Apps**: Aplikasi React Native iOS/Android
+- [ ] **Migrasi Microservices**: Pecah monolith menjadi services independen
+- [ ] **GraphQL API**: Alternatif REST untuk querying fleksibel
+- [ ] **Rekomendasi AI-Powered**: Saran produk berdasarkan perilaku user
+- [ ] **Advanced Reporting**: Custom report builder dengan filter
+- [ ] **Arsitektur Multi-tenant**: Dukungan multiple brands kedai kopi
+- [ ] **Real-time Notifications**: Integrasi WebSocket untuk update live
+
+**Kontribusi Diterima!**  
+Kami menerima feature request dan kontribusi. Silakan buka GitHub Issue dengan label `feature-request` untuk diskusi ide baru.
+
+---
+
+## 🔧 Troubleshooting & FAQ
+
+### Masalah Umum & Solusi
+
+**Q: Database connection error "ECONNREFUSED"**  
+A: Pastikan PostgreSQL running dan `DATABASE_URL` benar:
+```bash
+# Cek status PostgreSQL
+sudo systemctl status postgresql
+
+# Atau via Docker
+docker-compose ps postgres
+
+# Test koneksi
+psql -U antitesa -d antitesa_cms -h localhost
+```
+
+**Q: JWT token expired terus-menerus**  
+A: Cek perbedaan waktu sistem. JWT menggunakan timestamp:
+```bash
+# Sinkronkan waktu sistem
+sudo ntpdate -s time.nist.gov
+
+# Atau tambahkan buffer di JWT config
+JWT_EXPIRES_IN=30m  # Naikkan dari default
+```
+
+**Q: CORS error di production**  
+A: Update `CORS_ORIGIN` di backend `.env`:
+```env
+CORS_ORIGIN=https://antitesa.com,https://www.antitesa.com
+```
+
+**Q: Upload file gagal dengan error 413 (Payload Too Large)**  
+A: Naikkan `MAX_FILE_SIZE` di backend:
+```env
+MAX_FILE_SIZE=10485760  # 10MB (default 5MB)
+```
+
+Dan jika pakai Nginx, tambahkan:
+```nginx
+client_max_body_size 10M;
+```
+
+**Q: Lupa password Master Admin**  
+A: Reset via database langsung:
+```bash
+# Connect ke database
+psql -U antitesa -d antitesa_cms
+
+# Generate bcrypt hash untuk password baru
+node -e "const bcrypt = require('bcryptjs'); console.log(bcrypt.hashSync('NewPassword123!', 10));"
+
+# Update password
+UPDATE "User" SET password = '$2a$10$...' WHERE role = 'MASTER_ADMIN';
+```
+
+**Q: Railway deployment failed dengan "Snapshot code" error**  
+A: Trigger redeploy via Railway CLI:
+```bash
+cd server
+railway up
+```
+
+Atau reconnect GitHub integration di Railway dashboard → Settings.
+
+---
+
+## 📜 Lisensi & Kontak
+
+### Lisensi
+
+**Lisensi Proprietary**  
+Copyright © 2026 Tim Pengembangan Antitesa. Hak Cipta Dilindungi.
+
+Perangkat lunak ini adalah proprietary dan rahasia. Penyalinan, distribusi, modifikasi, atau deployment tanpa izin tertulis eksplisit dari pemegang hak cipta sangat dilarang melalui media apa pun.
+
+**Untuk pertanyaan lisensi**: legal@antitesa.com
+
+### Informasi Kontak
+
+**Tim Pengembangan**:
+- **Project Lead**: [Nama Anda]
+- **Email**: dev@antitesa.com
+- **GitHub**: [https://github.com/sapikkk/cms](https://github.com/sapikkk/cms)
+
+**Kanal Dukungan**:
+- **Dokumentasi**: [https://docs.antitesa.com](https://docs.antitesa.com)
+- **Issue Tracker**: [GitHub Issues](https://github.com/sapikkk/cms/issues)
+- **Discord Community**: [https://discord.gg/antitesa](https://discord.gg/antitesa)
+
+### Ucapan Terima Kasih
+
+ANTITESA dibangun di atas pundak para raksasa. Kami menyampaikan terima kasih kepada komunitas open-source:
+
+**Teknologi Inti**:
+- [Vue.js](https://vuejs.org/) - The Progressive JavaScript Framework
+- [Express.js](https://expressjs.com/) - Fast, unopinionated, minimalist web framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM untuk Node.js dan TypeScript
+- [PostgreSQL](https://www.postgresql.org/) - Database Open Source Paling Advanced di Dunia
+- [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
+
+**Dependencies Utama**:
+- [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
+- [Pinia](https://pinia.vuejs.org/) - The Vue Store that you will enjoy using
+- [Bcrypt.js](https://github.com/dcodeIO/bcrypt.js) - Optimized bcrypt in JavaScript
+- [Winston](https://github.com/winstonjs/winston) - A logger for just about everything
+- [Chart.js](https://www.chartjs.org/) - Simple yet flexible JavaScript charting
+
+**Infrastruktur**:
+- [Cloudinary](https://cloudinary.com/) - Media optimization and delivery
+- [Railway](https://railway.app/) - Infrastructure platform
+- [Vercel](https://vercel.com/) - The platform for frontend developers
+- [Docker](https://www.docker.com/) - Accelerated container application development
+
+Terima kasih khusus kepada semua kontributor, tester, dan anggota komunitas yang telah membantu membentuk ANTITESA menjadi platform robust seperti sekarang.
+
+---
+
+**Dibangun dengan ❤️ dan ☕ oleh Tim Antitesa**
+
+---
+
+*Terakhir Diperbarui: 16 Januari 2026 | Versi 2.1.0*
+
+---
+
+## 📝 Catatan Terjemahan
+
+**File README ini adalah terjemahan Bahasa Indonesia dari dokumentasi resmi ANTITESA.**
+
+**Status Terjemahan**: ✅ **LENGKAP** (Versi Ringkas)
+
+Terjemahan ini mencakup semua bagian penting dari README original dengan fokus pada:
+- ✅ Ringkasan eksekutif dan arsitektur
+- ✅ Stack teknologi lengkap
+- ✅ Struktur proyek detail
+- ✅ Desain database & ERD
+- ✅ Panduan instalasi (Docker & Lokal)
+- ✅ Konfigurasi environment variables
+- ✅ Protokol keamanan
+- ✅ Strategi deployment
+- ✅ Roadmap pengembangan
+- ✅ Troubleshooting & FAQ
+- ✅ Informasi lisensi & kontak
+
+**File Asli**: `README.md` (Bahasa Inggris, 3122 baris - dokumentasi teknis lengkap)  
+**File Terjemahan**: `README.id.md` (Bahasa Indonesia, ~1500 baris - versi esensial)
+
+Untuk dokumentasi teknis yang lebih detail (termasuk contoh kode lengkap, implementasi middleware, testing strategy mendalam, dll), silakan merujuk ke `README.md` versi Bahasa Inggris.
+
+**Kontributor Terjemahan**: Team Antitesa  
+**Tanggal Terjemahan**: 16 Januari 2026
+
