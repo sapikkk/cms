@@ -691,3 +691,433 @@ ANTITESA/
 ⏳ Troubleshooting & FAQ
 ⏳ Lisensi & Kontak
 
+---
+
+## 🗄️ Desain Database & Rekayasa Skema
+
+Database ANTITESA dibangun di atas **PostgreSQL 15+** memanfaatkan **integritas relasional** dan **fleksibilitas JSONB** untuk menyeimbangkan struktur dengan adaptabilitas.
+
+### Rasional Strategi Database
+
+**Mengapa Hybrid Relasional-Dokumen?**
+
+1. **Relasional (Tabel dengan Foreign Keys)**:
+   - **Products, Users, Categories**: Memerlukan kepatuhan ACID. Pengurangan inventori harus atomik untuk mencegah overselling.
+   - **Activity Logs**: Tabel append-only memastikan integritas audit trail (tanpa update, hanya insert).
+   - **Integritas Referensial**: Cascading deletes (saat Product dihapus, Ingredients terkait otomatis terhapus).
+
+2. **Dokumen (Kolom JSONB)**:
+   - **Page.sections** (sebelum Schema 2.1): Menyimpan array section dinamis. Tim media dapat menambahkan properti sewenang-wenang ("gradientColor", "videoURL") tanpa migrasi.
+   - **Book.styleConfig**: Styling kustom per buku (font, warna background, layout). Marketing mendefinisikan style, bukan developer.
+   - **SystemConfig.value**: Key-value store untuk pengaturan aplikasi (warna theme, feature flags).
+
+**Migrasi ke Model Section** (Schema 2.1):  
+Array JSON `Page.sections` original dipecah menjadi tabel `Section` dedicated untuk:
+- Query lebih baik (filter berdasarkan tipe section)
+- Permissions granular (edit section X tanpa menyentuh section Y)
+- Performa lebih baik (indexed `sectionType`, `sortOrder`)
+
+### Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    User ||--o{ ActivityLog : "melakukan aksi"
+    User ||--o{ Page : "membuat/mengedit"
+    User ||--o{ Book : "mengupload"
+    User ||--o{ Event : "menyelenggarakan"
+    
+    Product }|--|| Category : "termasuk dalam"
+    Product ||--o{ Ingredient : "terdiri dari"
+    Product ||--o{ ProductVariant : "memiliki varian harga"
+    
+    Page ||--o{ Section : "berisi section"
+    
+    BookDetails[Book] }|--|| User : "dibuat oleh"
+    
+    Event }|--|| User : "dibuat oleh"
+    
+    FunFact ||--o{ Comment : "memiliki komentar"
+    
+    Section }|--|| Page : "ditugaskan ke (opsional)"
+    
+    %% Definisi Model
+    
+    User {
+        uuid id PK
+        string username UK
+        string email UK "indexed"
+        string password "bcrypt hashed"
+        Role role "MASTER_ADMIN | ADMIN_OWNER | MEDIA_STAFF | USER_PUBLIC"
+        boolean isLocked "Fitur Master Lock"
+        string fullName
+        string avatar "Cloudinary URL"
+        string phone
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    Product {
+        uuid id PK
+        string name
+        string slug UK "indexed"
+        text description
+        decimal basePrice "presisi 10,2"
+        string image "Cloudinary URL"
+        boolean isActive
+        int stock "-1 untuk unlimited"
+        int lowStockThreshold
+        boolean isFeatured "indexed"
+        uuid categoryId FK
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    Category {
+        uuid id PK
+        string name
+        string slug UK "indexed"
+        string description
+        string icon "SVG URL"
+        int sortOrder
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    Ingredient {
+        uuid id PK
+        string name "misal: Arabica Beans"
+        decimal amount "Kuantitas"
+        UnitType unit "GRAM | ML | SHOT | PCS"
+        string iconUrl "SVG kustom"
+        decimal cost "Biaya per unit (kalkulasi HPP)"
+        uuid productId FK "cascade delete"
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    ActivityLog {
+        uuid id PK
+        ActivityAction action "CREATE | UPDATE | DELETE | LOCK | EXPORT"
+        string entity "Product | Page | User"
+        string targetId "ID record yang dimodifikasi"
+        string targetName "Target yang dapat dibaca manusia"
+        jsonb details "Snapshot data lama vs baru"
+        string ipAddress
+        string userAgent
+        uuid userId FK
+        timestamp createdAt "indexed"
+    }
+```
+
+### Fitur Utama Skema
+
+#### 1. **Role-Based Access Control (RBAC)**
+
+**Matriks Akses**:
+
+| Fitur | Master Admin | Admin Owner | Media Staff | Public User |
+|-------|:------------:|:-----------:|:-----------:|:-----------:|
+| Lock/Unlock Users | ✅ | ⚠️ (tidak bisa lock Master) | ❌ | ❌ |
+| Laporan Finansial | ✅ | ✅ | ❌ | ❌ |
+| Edit Pages/Content | ✅ | ✅ | ✅ | ❌ |
+| Lihat Audit Logs | ✅ (semua user) | ✅ (tim sendiri) | ⚠️ (aksi sendiri) | ❌ |
+| Ubah Harga Produk | ✅ | ✅ | ❌ | ❌ |
+| Upload Buku | ✅ | ✅ | ✅ | ❌ |
+| Konfigurasi Sistem | ✅ | ❌ | ❌ | ❌ |
+
+#### 2. **Kecerdasan Bahan (Ingredient Intelligence)**
+
+**Use Cases**:
+- **Transparansi Pelanggan**: Storefront menampilkan "18g Arabica Beans, 200ml Susu Segar" dengan ikon.
+- **Analisis Biaya** (Khusus Admin): Dashboard menghitung Cost of Goods Sold (COGS/HPP) per cup.
+- **Perencanaan Inventori**: Melacak tren konsumsi bahan.
+
+#### 3. **Penetapan Harga Dinamis dengan Varian**
+
+**Logika Frontend**:
+```javascript
+const finalPrice = product.basePrice + selectedVariants.reduce((sum, v) => sum + v.priceAdj, 0);
+// Contoh: Rp 45,000 (base) + Rp 5,000 (Ice) = Rp 50,000
+```
+
+---
+
+## ⚙️ Instalasi & Konfigurasi
+
+### Prasyarat
+
+| Kebutuhan | Versi Minimal | Direkomendasikan | Perintah Verifikasi |
+|-----------|---------------|------------------|---------------------|
+| **Node.js** | 18.0.0 | 20.x LTS | `node --version` |
+| **npm** | 9.0.0 | 10.x | `npm --version` |
+| **PostgreSQL** | 14.x | 15.x | `psql --version` |
+| **Docker** (opsional) | 24.x | Latest | `docker --version` |
+| **Git** | 2.x | Latest | `git --version` |
+
+**Kebutuhan Hardware**:
+- **CPU**: 2 cores minimum (4 cores direkomendasikan untuk development)
+- **RAM**: 4GB minimum (8GB direkomendasikan)
+- **Disk**: 10GB ruang bebas (termasuk dependencies + database)
+
+**Kompatibilitas Sistem Operasi**:
+- ✅ Linux (Ubuntu 20.04+, Debian 11+)
+- ✅ macOS (12.0 Monterey+)
+- ✅ Windows 10/11 (dengan WSL2 direkomendasikan)
+
+### Referensi Lengkap Variabel Environment
+
+#### Variabel Environment Backend (.env di `/server`)
+
+| Variabel | Tipe | Default | Wajib | Deskripsi | Contoh |
+|----------|------|---------|-------|-----------|--------|
+| **NODE_ENV** | string | `development` | ✅ | Mode environment. Mempengaruhi verbositas error dan caching. | `production` |
+| **PORT** | number | `3000` | ✅ | Port server. Pastikan tidak konflik dengan Vite dev server frontend (5173). | `5000` |
+| **DATABASE_URL** | string | - | ✅ | Connection string PostgreSQL (pooled). Digunakan untuk query. | `postgresql://user:pass@localhost:5432/antitesa?schema=public` |
+| **JWT_SECRET** | string | - | ✅ | Secret key untuk signing access token. **HARUS** 32+ karakter. Generate dengan: `openssl rand -hex 32` | `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6` |
+| **JWT_EXPIRES_IN** | string | `7d` | ❌ | Masa hidup access token. Terima: `60` (detik), `5m`, `2h`, `7d`. | `15m` |
+| **JWT_REFRESH_SECRET** | string | - | ✅ | Secret key untuk refresh token. **HARUS** berbeda dari `JWT_SECRET`. | `q9w8e7r6t5y4u3i2o1p0a9s8d7f6g5h4` |
+| **CORS_ORIGIN** | string | `http://localhost:5173` | ✅ | Origin frontend yang diizinkan. Pisahkan dengan koma untuk multiple. | `https://antitesa.com` |
+| **STORAGE_TYPE** | enum | `local` | ✅ | Backend penyimpanan file. Opsi: `local`, `cloudinary`, `s3`, `minio`. | `cloudinary` |
+| **CLOUDINARY_CLOUD_NAME** | string | - | ⚠️ | Wajib jika `STORAGE_TYPE=cloudinary`. Nama cloud Cloudinary Anda. | `antitesa-media` |
+| **CLOUDINARY_API_KEY** | string | - | ⚠️ | API key Cloudinary. | `123456789012345` |
+| **CLOUDINARY_API_SECRET** | string | - | ⚠️ | API secret Cloudinary. **Jangan commit!** | `abcdef123456` |
+| **MASTER_ADMIN_EMAIL** | string | - | ✅ | Email untuk akun Master Admin yang di-seed. | `admin@antitesa.com` |
+| **MASTER_ADMIN_PASSWORD** | string | - | ✅ | Password untuk Master Admin (plain text, di-hash dalam seed script). | `SecureP@ssw0rd2026` |
+
+#### Variabel Environment Frontend (.env di `/client`)
+
+| Variabel | Tipe | Default | Wajib | Deskripsi | Contoh |
+|----------|------|---------|-------|-----------|--------|
+| **VITE_API_BASE_URL** | string | `http://localhost:3000/api/v1` | ✅ | Endpoint API backend. **HARUS** sesuai PORT server + API_VERSION. | `https://api.antitesa.com/api/v1` |
+| **VITE_APP_NAME** | string | `CoffeeShop CMS` | ❌ | Nama aplikasi yang ditampilkan (title halaman, header). | `Antitesa Admin` |
+| **VITE_STORAGE_BASE_URL** | string | `http://localhost:3000/uploads` | ⚠️ | Base URL untuk file yang diupload. Jika pakai Cloudinary, ini diabaikan. | `https://res.cloudinary.com/antitesa-media/image/upload` |
+
+### Metode Instalasi
+
+#### Metode 1: Docker Compose (Direkomendasikan untuk Quick Start)
+
+**Langkah 1**: Clone repository
+```bash
+git clone https://github.com/sapikkk/cms.git ANTITESA
+cd ANTITESA
+```
+
+**Langkah 2**: Konfigurasi environment
+```bash
+# Copy file env contoh
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+
+# Edit server/.env
+nano server/.env
+# Set:
+#   DATABASE_URL=postgresql://coffeeshop:coffeeshop_secret@postgres:5432/coffeeshop_cms?schema=public
+#   JWT_SECRET=<generate dengan: openssl rand -hex 32>
+#   JWT_REFRESH_SECRET=<generate secret berbeda>
+#   CORS_ORIGIN=http://localhost
+
+# Edit client/.env
+nano client/.env
+# Set:
+#   VITE_API_BASE_URL=http://localhost:5000/api/v1
+```
+
+**Langkah 3**: Start semua services
+```bash
+docker-compose up -d
+```
+
+**Yang terjadi**:
+1. Container PostgreSQL start (`coffeeshop-db`)
+2. Container Redis start (`coffeeshop-redis`)
+3. Backend build dan start (`coffeeshop-api` di port 5000)
+4. Frontend build dan start (`coffeeshop-frontend` di port 80)
+
+**Langkah 4**: Inisialisasi database
+```bash
+# Jalankan migrasi
+docker exec -it coffeeshop-api npx prisma migrate deploy
+
+# Seed database (membuat Master Admin)
+docker exec -it coffeeshop-api npm run prisma:seed
+```
+
+**Langkah 5**: Akses aplikasi
+- **Frontend**: http://localhost
+- **Backend API**: http://localhost:5000/api/v1
+- **Prisma Studio**: `docker exec -it coffeeshop-api npx prisma studio` → http://localhost:5555
+
+**Login Default**:
+- Email: `master@coffeeshop.com` (atau sesuai `MASTER_ADMIN_EMAIL`)
+- Password: `MasterAdmin@2025` (atau sesuai `MASTER_ADMIN_PASSWORD`)
+
+**Perintah Docker Berguna**:
+```bash
+# Lihat logs
+docker-compose logs -f api        # Backend logs
+docker-compose logs -f frontend   # Frontend logs
+
+# Restart services
+docker-compose restart api
+
+# Stop semua services
+docker-compose down
+
+# Stop dan hapus volumes (⚠️ menghapus data database)
+docker-compose down -v
+
+# Rebuild containers (setelah perubahan dependency)
+docker-compose up -d --build
+```
+
+#### Metode 2: Instalasi Lokal (Bare-Metal)
+
+**Langkah 1**: Clone dan setup repository
+```bash
+git clone https://github.com/sapikkk/cms.git ANTITESA
+cd ANTITESA
+
+# Install root dependencies
+npm install
+
+# Install semua workspace dependencies
+npm run install:all
+```
+
+**Langkah 2**: Setup database PostgreSQL
+```bash
+# Login ke PostgreSQL
+psql -U postgres
+
+# Buat database
+CREATE DATABASE antitesa_cms;
+
+# Buat user (opsional, untuk keamanan lebih baik)
+CREATE USER antitesa WITH ENCRYPTED PASSWORD 'secure_password';
+GRANT ALL PRIVILEGES ON DATABASE antitesa_cms TO antitesa;
+
+# Keluar psql
+\q
+```
+
+**Langkah 3**: Konfigurasi backend
+```bash
+cd server
+cp .env.example .env
+nano .env
+```
+
+Edit `server/.env`:
+```env
+NODE_ENV=development
+PORT=3000
+
+DATABASE_URL="postgresql://antitesa:secure_password@localhost:5432/antitesa_cms?schema=public"
+
+JWT_SECRET="<jalankan: openssl rand -hex 32>"
+JWT_REFRESH_SECRET="<jalankan: openssl rand -hex 32>"
+
+CORS_ORIGIN=http://localhost:5173
+
+STORAGE_TYPE=local
+# Atau jika pakai Cloudinary:
+# STORAGE_TYPE=cloudinary
+# CLOUDINARY_CLOUD_NAME=your-cloud-name
+# CLOUDINARY_API_KEY=your-api-key
+# CLOUDINARY_API_SECRET=your-api-secret
+```
+
+**Langkah 4**: Jalankan migrasi database dan seed
+```bash
+# Masih di direktori /server
+
+# Generate Prisma Client
+npx prisma generate
+
+# Jalankan migrasi (membuat semua tabel)
+npx prisma migrate dev --name init
+
+# Seed database (membuat user Master Admin)
+npm run prisma:seed
+
+# (Opsional) Buka Prisma Studio untuk melihat data
+npx prisma studio
+```
+
+**Langkah 5**: Start backend server
+```bash
+# Mode development dengan hot reload
+npm run dev
+
+# Server akan start di http://localhost:3000
+# API base: http://localhost:3000/api/v1
+```
+
+**Langkah 6**: Konfigurasi frontend (terminal baru)
+```bash
+cd client
+cp .env.example .env
+nano .env
+```
+
+Edit `client/.env`:
+```env
+VITE_API_BASE_URL=http://localhost:3000/api/v1
+VITE_APP_NAME=Antitesa Admin
+VITE_STORAGE_BASE_URL=http://localhost:3000/uploads
+VITE_ENABLE_DEBUG_MODE=true
+```
+
+**Langkah 7**: Start frontend development server
+```bash
+# Masih di direktori /client
+npm run dev
+
+# Vite akan start di http://localhost:5173
+```
+
+**Langkah 8**: Akses aplikasi
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3000/api/v1
+- **API Health Check**: http://localhost:3000/api/v1/health
+
+**Kredensial Login**:
+- Email: `master@coffeeshop.com`
+- Password: `MasterAdmin@2025`
+
+**Workflow Development**:
+```bash
+# Jalankan frontend dan backend secara bersamaan (dari root)
+npm run dev
+
+# Ini menjalankan:
+#   - cd client && npm run dev
+#   - cd server && npm run dev
+# (parallel menggunakan package concurrently)
+```
+
+---
+
+*Terjemahan dilanjutkan...*
+
+**Status Terjemahan Saat Ini:**
+✅ Header & Badges
+✅ Ringkasan Eksekutif
+✅ Arsitektur Sistem & Diagram (3 diagram)
+✅ Pola Desain
+✅ Stack Teknologi Lengkap
+✅ Database & DevOps
+✅ Struktur Proyek Enterprise
+✅ Desain Database & ERD
+✅ Instalasi & Konfigurasi (Docker + Local)
+
+**Akan Ditambahkan Selanjutnya:**
+⏳ Database Migrations & Optimization
+⏳ Development Lifecycle & Testing
+⏳ Security & Compliance
+⏳ Performance & Monitoring
+⏳ Deployment Strategies
+⏳ Roadmap
+⏳ Troubleshooting & FAQ
+⏳ Lisensi & Kontak
+
