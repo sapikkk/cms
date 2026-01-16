@@ -1,409 +1,466 @@
-# ANTITESA - Major Features Implementation Plan
-
-**Date:** 2026-01-14  
-**Status:** In Progress  
-**Priority:** High
+# IMPLEMENTATION PLAN - ANTITESA Enhancement
+**Date**: 15 Januari 2026  
+**Total Requests**: 6 Major Features
 
 ---
 
-## 🎯 Overview
+## 🎯 PRIORITY & COMPLEXITY MATRIX
 
-Implementing 4 major feature enhancements to the ANTITESA dashboard:
+| # | Request | Priority | Complexity | Est. Time | Status |
+|---|---------|----------|------------|-----------|--------|
+| 3 | **Product Image Upload Missing** | 🔴 CRITICAL | Low | 15 min | ⬜ Todo |
+| 2 | **Favicon & Browser Title** | 🟠 HIGH | Low | 20 min | ⬜ Todo |
+| 1 | **Navbar Missing in Page Builder** | 🟠 HIGH | Medium | 30 min | ⬜ Todo |
+| 4 | **Connect Page Builder Buttons** | 🟡 MEDIUM | Medium | 45 min | ⬜ Todo |
+| 5 | **Widget Forum & Blog + Integration** | 🟡 MEDIUM | High | 2-3 hours | ⬜ Todo |
+| 6 | **Access Control Enhancement** | 🟢 LOW | High | 2-3 hours | ⬜ Todo |
 
-1. ✅ **Toast & Dialog System** (COMPLETED)
-2. 🔄 **Replace all window.confirm/alert** (IN PROGRESS)
-3. 📋 **Access Control CRUD + Password Management** (PENDING)
-4. 📊 **Comprehensive Audit Log System** (PENDING)
-5. 🎨 **Theme Customizer Activation** (PENDING)
-6. 💎 **Dashboard Redesign** (PENDING)
+**Total Estimated Time**: 5-7 hours
 
 ---
 
-## ✅ Phase 1: Toast & Dialog System (COMPLETED)
+## 📝 DETAILED BREAKDOWN
 
-### Completed Tasks:
-- ✅ Install `vue-sonner` package
-- ✅ Create `ConfirmDialog.vue` component with beautiful UI
-- ✅ Create `useConfirm.js` composable 
-- ✅ Create `toast.js` utility helpers
-- ✅ Setup global components in `App.vue`
-- ✅ Fix all lint errors
+### 1️⃣ **Navbar Missing in Page Builder Preview** 🟠 HIGH
 
-### Usage:
-```javascript
-// Toast
-import { showToast } from '@/utils/toast'
-showToast.success('Berhasil!', 'Data telah disimpan')
-showToast.error('Gagal!', 'Terjadi kesalahan')
+**Problem**: 
+- Navbar tidak muncul saat view page dari page builder
+- Screenshot menunjukkan navbar ada di landing page tapi tidak di preview
 
-// Confirm Dialog
-import { useConfirm } from '@/composables/useConfirm'
-const { confirm } = useConfirm()
-const confirmed = await confirm({
-  title: 'Hapus Data?',
-  message: 'Data akan dihapus permanen',
-  variant: 'danger'
-})
+**Root Cause Analysis Needed**:
+- Check `PageViewer.vue` component
+- Check if Navbar component is imported in preview
+- Check API call for navbar data in preview mode
+
+**Files to Check**:
+```
+client/src/views/dashboard/pages/PageViewer.vue
+client/src/components/storefront/Navbar.vue
+client/src/api/page.service.js
+```
+
+**Solution**:
+- Ensure Navbar component is included in PageViewer
+- Pass correct navbar data to Navbar component
+- Handle navbar visibility in preview mode
+
+---
+
+### 2️⃣ **Favicon & Browser Title Change** 🟠 HIGH
+
+**Request**:
+a. Change favicon to `Antitesa.svg`
+b. Change browser tab title from "CoffeeShop CMS" to "ANTITESA"
+c. BONUS: Make favicon editable via Content Management (Cloudinary upload)
+
+**Files to Modify**:
+```
+client/index.html (title + favicon link)
+client/public/ (add Antitesa.svg as favicon)
+```
+
+**For Dynamic Favicon (Part C)**:
+```
+server/src/models/site-content.model.ts (add favicon field)
+client/src/views/dashboard/content/ContentManager.vue (add favicon upload)
+client/src/App.vue (dynamically set favicon on mount)
+```
+
+**Implementation Steps**:
+1. Quick fix: Update `index.html` with static favicon
+2. Copy `Antitesa.svg` to `client/public/favicon.svg`
+3. Extended: Add favicon field to site content schema
+4. Add Cloudinary upload in Content Management
+5. Add dynamic favicon loading in App.vue
+
+---
+
+### 3️⃣ **Product Image Upload Missing** 🔴 CRITICAL
+
+**Problem**: 
+- Field "Gambar Produk" hilang di form Create/Edit Product
+- Screenshot menunjukkan form hanya punya: Nama, Kategori, Harga, Deskripsi, Komposisi
+
+**Files to Fix**:
+```
+client/src/views/dashboard/products/ProductForm.vue
+```
+
+**Solution**:
+- Add CloudinaryImageUploader component back
+- Place it between "Kategori" and "Deskripsi" sections
+- Bind to `product.image` model
+
+**Code to Add**:
+```vue
+<!-- Gambar Produk Section -->
+<div>
+  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    Gambar Produk
+  </label>
+  <CloudinaryImageUploader
+    v-model="product.image"
+    :current-image="product.image"
+    upload-preset="YOUR_UPLOAD_PRESET"
+    folder="products"
+  />
+</div>
 ```
 
 ---
 
-## 🔄 Phase 2: Replace window.confirm/alert (IN PROGRESS)
+### 4️⃣ **Connect Page Builder Buttons to Actual Pages** 🟡 MEDIUM
 
-### Files to Update (22 files):
+**Request**: 
+- Button "Lihat Menu" → redirect to `/menu` (product list)
+- Button "Eksplor Ruang" → redirect to appropriate page
+- Other CTA buttons should link to real pages
 
-#### Confirm Dialogs:
-1. `/views/dashboard/products/ProductList.vue` - Line 157
-2. `/views/dashboard/products/ProductForm.vue` - Line 300
-3. `/views/dashboard/library/BookList.vue` - Line 101
-4. `/views/dashboard/events/EventList.vue` - Line 163
-5. `/views/dashboard/merchandise/MerchandiseList.vue` - Line 162
-6. `/views/dashboard/funfacts/FunFactList.vue` - Line 102
-7. `/views/dashboard/notifications/NotificationList.vue` - Line 111
-8. `/views/dashboard/pages/PageList.vue` - Line 216
-9. `/views/dashboard/pages/PageBuilder.vue` - Lines 575, 631, 781, 790
+**Files to Modify**:
+```
+client/src/components/storefront/sections/*.vue (all CTA sections)
+```
 
-#### Alert Messages (Replace with Toast):
-1. All `ProductForm.vue` alerts
-2. All `BookForm.vue` alerts
-3. All `EventForm.vue` alerts
-4. All `MerchandiseForm.vue` alerts
-5. All `FunFactForm.vue` alerts
-6. All `NotificationForm.vue` alerts
-7. All `PageList.vue` alerts
-8. All `PageBuilder.vue` alerts
-9. `ThemeCustomizer.vue` - Line 218
+**Analysis Needed**:
+1. Find all button components in sections
+2. Map button labels to routes:
+   - "Lihat Menu" → `/menu` or `/products`
+   - "Eksplor Ruang" → `/about` or `/spaces`
+   - "Hubungi Kami" → `/contact`
+   - "Daftar Event" → `/events`
 
-### Implementation Strategy:
-- Replace `confirm()` → `await confirm({...})`
-- Replace `alert()` → `showToast.success/error(...)`
-- Add proper async/await handling
-- Add loading states during operations
-- Show success toast after successful operations
+**Implementation**:
+- Add `buttonLink` field to section schemas
+- Update CTA components to use `router-link` or `<a>` tag
+- Make links editable in Page Builder
 
 ---
 
-## 📋 Phase 3: Access Control CRUD + Password Management
+### 5️⃣ **Widget Forum & Blog + Module Integration** 🟡 MEDIUM (COMPLEX)
 
-### Backend Requirements:
+**Request Part A: New Widgets**
+1. **Forum Widget** (connect to FunFact comments)
+2. **Blog/News Widget**
 
-#### New API Endpoints:
+**Request Part B: Connect All Widgets to Dashboard Modules**
+- Products → ProductsSection widget
+- Library → LibrarySection widget
+- Events → EventsSection widget
+- Merchandise → MerchandiseSection widget
+- Notifications → NotificationSection widget
+- FunFacts → FunFactsSection widget (with comments)
+- **NEW: Forum → ForumSection widget**
+- **NEW: Blog → BlogSection widget**
+
+**Architecture Analysis**:
+
+Current state:
 ```
-POST   /api/v1/users                 - Create user
-GET    /api/v1/users                 - List users
-GET    /api/v1/users/:id             - Get user detail
-PUT    /api/v1/users/:id             - Update user
-DELETE /api/v1/users/:id             - Delete user
-POST   /api/v1/users/:id/reset-password - Reset password (Master Admin)
-PUT    /api/v1/users/:id/change-password - Change password
-GET    /api/v1/users/:id/activity    - Get user activity log
+Dashboard Modules → Isolated data management
+Storefront Widgets → Static/hardcoded data
 ```
 
-#### Database Changes:
-- Ensure `User` model has all necessary fields
-- Add `lastPasswordChange` timestamp
-- Add `passwordResetRequired` boolean
-- Create `ActivityLog` model if not exists
+Desired state:
+```
+Dashboard Modules ←→ API ←→ Storefront Widgets
+        ↓                         ↓
+    CRUD Ops              Dynamic Content Display
+```
 
-### Frontend Components:
+**Implementation Plan**:
 
-#### New Components:
-1. `/views/dashboard/users/UserList.vue` - User management table
-2. `/views/dashboard/users/UserForm.vue` - Create/Edit user
-3. `/views/dashboard/users/PasswordResetDialog.vue` - Password reset modal
-4. `/views/dashboard/users/UserActivityLog.vue` - User activity viewer
-5. `/components/ui/PasswordInput.vue` - Password input with strength meter
+**5.1. Create ForumSection Widget**
+```
+Files to Create:
+- client/src/components/storefront/sections/ForumSection.vue
+- server/src/models/forum-post.model.ts (if not exists)
+- server/src/controllers/forum.controller.ts
+- server/src/services/forum.service.ts
+```
 
-#### Features:
-- [x] CRUD operations for users
-- [x] Role assignment (MASTER_ADMIN, ADMIN_OWNER, MEDIA_STAFF)
-- [x] Password management:
-  - Reset password (generate temporary)
-  - Force password change
-  - Password strength requirements
-- [x] User status (Active/Inactive)
-- [x] Activity log per user
-- [x] Bulk actions
-- [x] Export user list
+**5.2. Create BlogSection Widget**
+```
+Files to Create:
+- client/src/components/storefront/sections/BlogSection.vue
+- server/src/models/blog-post.model.ts
+- server/src/controllers/blog.controller.ts
+- server/src/services/blog.service.ts
+```
 
-### Router Updates:
-```javascript
-{
-  path: '/dashboard/users',
-  name: 'UserList',
-  component: UserList,
-  meta: { roles: ['MASTER_ADMIN'] }
-},
-{
-  path: '/dashboard/users/create',
-  name: 'UserCreate',
-  component: UserForm,
-  meta: { roles: ['MASTER_ADMIN'] }
-},
-{
-  path: '/dashboard/users/:id/edit',
-  name: 'UserEdit',
-  component: UserForm,
-  meta: { roles: ['MASTER_ADMIN'] }
+**5.3. Update Existing Widgets to Fetch from API**
+
+Current widgets that need API connection:
+```
+✅ ProductsSection.vue → GET /api/v1/products (DONE)
+✅ LibrarySection.vue → GET /api/v1/books (DONE)
+✅ EventsSection.vue → GET /api/v1/events (DONE)
+⚠️ MerchandiseSection.vue → GET /api/v1/merchandise (VERIFY)
+⚠️ NotificationSection.vue → GET /api/v1/notifications (VERIFY)
+❌ FunFactsSection.vue → GET /api/v1/funfacts (TODO)
+❌ ForumSection.vue → GET /api/v1/forum (TODO - NEW)
+❌ BlogSection.vue → GET /api/v1/blog (TODO - NEW)
+```
+
+**5.4. Schema Design**
+
+**Forum Post Schema**:
+```typescript
+interface ForumPost {
+  id: string
+  title: string
+  content: string
+  author: string
+  category: string
+  tags: string[]
+  likes: number
+  comments: Comment[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface Comment {
+  id: string
+  postId: string
+  authorName: string
+  authorEmail: string
+  content: string
+  createdAt: Date
+}
+```
+
+**Blog Post Schema**:
+```typescript
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string (rich text)
+  coverImage: string
+  author: User
+  category: string
+  tags: string[]
+  publishedAt: Date
+  status: 'DRAFT' | 'PUBLISHED'
+  viewCount: number
 }
 ```
 
 ---
 
-## 📊 Phase 4: Comprehensive Audit Log System
+### 6️⃣ **Access Control Enhancement** 🟢 LOW (COMPLEX)
 
-### Backend Implementation:
+**Request Part A: User Profile Management**
+1. Ubah Password feature
+2. Ubah Nama feature
 
-#### Audit Log Model:
-```prisma
-model AuditLog {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  entity      String   // "Product", "Page", "User", etc.
-  entityId    String?
-  action      AuditAction  // CREATE, UPDATE, DELETE, LOGIN, LOGOUT
-  description String
-  ipAddress   String?
-  userAgent   String?
-  changes     Json?    // Store before/after data
-  createdAt   DateTime @default(now())
-}
+**Request Part B: New User Roles**
+Add 2 new roles:
+- `CASHIER` (for point of sale operations)
+- `BARISTA` (for production/kitchen)
 
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-  PASSWORD_RESET
-  STATUS_CHANGE
-  PUBLISH
-  UNPUBLISH
+**Request Part C: Content Management Integration**
+Ensure Content Management properly connects with:
+- Page Builder (edit pages)
+- Landing Page (preview changes)
+
+---
+
+**Current Roles** (from codebase):
+```typescript
+enum UserRole {
+  MASTER_ADMIN = 'MASTER_ADMIN',
+  ADMIN_OWNER = 'ADMIN_OWNER',
+  MEDIA_STAFF = 'MEDIA_STAFF',
+  PUBLIC = 'PUBLIC'
 }
 ```
 
-#### Audit Logging Middleware:
-- Create `audit.middleware.ts`
-- Auto-log all mutating operations
-- Capture user, timestamp, IP, changes
-- Store in background (non-blocking)
-
-#### API Endpoints:
-```
-GET /api/v1/audit-logs              - List all logs (Master Admin)
-GET /api/v1/audit-logs/:id          - Get log detail
-GET /api/v1/audit-logs/entity/:type - Filter by entity type
-GET /api/v1/audit-logs/user/:userId - Filter by user
-GET /api/v1/audit-logs/export       - Export to CSV/Excel
+**New Roles to Add**:
+```typescript
+enum UserRole {
+  MASTER_ADMIN = 'MASTER_ADMIN',
+  ADMIN_OWNER = 'ADMIN_OWNER',
+  MEDIA_STAFF = 'MEDIA_STAFF',
+  CASHIER = 'CASHIER',        // NEW
+  BARISTA = 'BARISTA',        // NEW
+  PUBLIC = 'PUBLIC'
+}
 ```
 
-### Frontend Components:
+**Permission Matrix**:
 
-#### Update Existing:
-1. `/views/master-admin/AuditLogs.vue` - Enhance with:
-   - Real-time activity feed
-   - Advanced filtering (entity, action, date range, user)
-   - Timeline view
-   - Detailed change viewer (JSON diff)
-   - Export functionality
-   - Activity statistics
+| Feature | Master Admin | Owner | Media Staff | Cashier | Barista | Public |
+|---------|-------------|-------|-------------|---------|---------|--------|
+| User Management | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Products (CRUD) | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Orders (View) | ✅ | ✅ | ❌ | ✅ | ✅ | ❌ |
+| Orders (Create) | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ |
+| Orders (Update Status) | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ |
+| Content Management | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Reports | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Change Own Password | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Change Own Name | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 
-#### New Components:
-1. `/components/dashboard/ActivityTimeline.vue` - Visual timeline
-2. `/components/dashboard/ChangeViewer.vue` - JSON diff viewer
-3. `/components/dashboard/AuditStats.vue` - Activity statistics
+**Files to Modify (Part A - Profile)**:
+```
+server/src/controllers/auth.controller.ts (add changePassword, updateProfile)
+client/src/views/dashboard/profile/UserProfile.vue (NEW)
+client/src/api/auth.service.js (add changePassword, updateProfile methods)
+```
 
-### Logging Points:
-All CRUD operations should trigger audit logs:
-- Products (Create, Update, Delete)
-- Library Books (Create, Update, Delete)
-- Events (Create, Update, Delete, Publish)
-- Merchandise (Create, Update, Delete)
-- Fun Facts (Create, Update, Delete)
-- Notifications (Create, Update, Delete, Status Change)
-- Pages (Create, Update, Delete, Publish, Navbar Toggle)
-- Users (Create, Update, Delete, Password Reset)
-- Access Control Changes
-- Theme Settings Updates
-- Login/Logout events
+**Files to Modify (Part B - Roles)**:
+```
+server/src/types/enums.ts (add CASHIER, BARISTA)
+server/prisma/schema.prisma (update UserRole enum)
+server/src/middleware/role.middleware.ts (update permissions)
+client/src/router/guards/role.guard.js (update role checks)
+```
 
----
-
-## 🎨 Phase 5: Theme Customizer Activation
-
-### Current Status:
-- Component exists at `/views/dashboard/settings/ThemeCustomizer.vue`
-- Route exists but might need review
-- Needs integration with landing page
-
-### Tasks:
-1. Review `ThemeCustomizer.vue` functionality
-2. Test color picker and preview
-3. Ensure changes apply to:
-   - Dashboard (already working)
-   - **Landing page/Storefront** (primary goal)
-4. Add real-time preview toggle
-5. Add theme templates/presets
-6. Add export/import theme config
-
-### Landing Page Integration:
-```javascript
-// In storefront layout
-import { useTheme } from '@/composables/useTheme'
-const { currentTheme } = useTheme()
-
-// Apply custom CSS variables
-watch(currentTheme, (theme) => {
-  document.documentElement.style.setProperty('--primary-color', theme.primaryColor)
-  document.documentElement.style.setProperty('--secondary-color', theme.secondaryColor)
-  // ... etc
-})
+**Files to Verify (Part C - Content Integration)**:
+```
+client/src/views/dashboard/content/ContentManager.vue
+client/src/views/dashboard/pages/PageBuilder.vue
+server/src/controllers/site-content.controller.ts
+server/src/controllers/page.controller.ts
 ```
 
 ---
 
-## 💎 Phase 6: Dashboard Redesign
+## 🚀 IMPLEMENTATION ORDER
 
-### Design Goals:
-- Modern, premium aesthetics
-- Improved data visualization
-- Better UX/UI flow
-- Responsive and mobile-friendly
-- Dark mode optimized
+**Phase 1: Critical Fixes** (30 minutes)
+1. ✅ Fix Product Image Upload
+2. ✅ Update Favicon & Title
 
-### Updated Components:
+**Phase 2: UI/UX Improvements** (1 hour)
+3. ✅ Fix Navbar in Page Builder Preview
+4. ✅ Connect Page Builder Buttons
 
-#### 1. `/views/dashboard/Overview.vue`
-**Enhancements:**
-- Hero stats section with animated counters
-- Revenue chart (Chart.js/ApexCharts)
-- Recent activity feed
-- Quick actions grid
-- Sales performance cards
-- Top products/books widget
-- Upcoming events calendar widget
-- Activity heatmap
+**Phase 3: Backend Enhancement** (3-4 hours)
+5. ✅ Create Forum Module (Backend + Frontend)
+6. ✅ Create Blog Module (Backend + Frontend)
+7. ✅ Update All Widgets to Fetch from API
+8. ✅ Add Forum & Blog Widgets to Page Builder
 
-#### 2. Sidebar Navigation
-**Improvements:**
-- Grouped menu items
-- Icon updates (Phosphor Icons)
-- Collapsible sections
-- Active state indicators
-- Hover effects
-- Badge notifications
-
-#### 3. Data Tables
-**Enhancements:**
-- Better pagination
-- Column sorting
-- Quick filters
-- Bulk actions
-- Export options
-- Responsive design
-
-#### 4. Forms
-**Improvements:**
-- Better validation feedback
-- Loading states
-- Success animations
-- Field hints/tooltips
-- Auto-save indicators
-
-#### 5. Color Palette Refinement
-**Updates:**
-- Primary: Orange (#F97316)
-- Secondary: Green (#166534)
-- Background: Cream (#FFFBF5)
-- Dark Mode: Deep Green (#052e16)
-- Accent colors for categories
+**Phase 4: Access Control** (2-3 hours)
+9. ✅ Add Change Password Feature
+10. ✅ Add Update Profile Feature
+11. ✅ Add CASHIER and BARISTA Roles
+12. ✅ Update Permission System
+13. ✅ Verify Content Management Integration
 
 ---
 
-## 📋 Implementation Checklist
+## ⚠️ QUESTIONS FOR USER (Before Implementation)
 
-### Phase 2 (Current):
-- [ ] Create helper function for async confirm dialogs
-- [ ] Update ProductList.vue
-- [ ] Update BookList.vue
-- [ ] Update EventList.vue
-- [ ] Update MerchandiseList.vue
-- [ ] Update FunFactList.vue
-- [ ] Update NotificationList.vue
-- [ ] Update PageList.vue
-- [ ] Update PageBuilder.vue
-- [ ] Update All Form components (replace alerts with toasts)
-- [ ] Test all CRUD operations
+### Q1: Forum Feature Scope
+Apakah Forum ini untuk:
+- A) Internal discussion (staff only)?
+- B) Public discussion (customer dapat comment)?
+- C) Hybrid (ada public posts + staff-only posts)?
 
-### Phase 3:
-- [ ] Design User Management wireframes
-- [ ] Create backend API endpoints
-- [ ] Create database migrations
-- [ ] Implement UserList component
-- [ ] Implement UserForm component
-- [ ] Implement PasswordResetDialog
-- [ ] Implement UserActivityLog
-- [ ] Add password strength meter
-- [ ] Test all user management flows
-- [ ] Add master admin restrictions
+**Current FunFact** already has comments. Should we:
+- Merge Forum with FunFact?
+- Keep them separate (FunFact = fun coffee facts, Forum = general discussion)?
 
-### Phase 4:
-- [ ] Design AuditLog database schema
-- [ ] Create audit middleware
-- [ ] Implement logging in all controllers
-- [ ] Update AuditLogs view
-- [ ] Add timeline visualization
-- [ ] Add JSON diff viewer
-- [ ] Add export functionality
-- [ ] Test audit trail completeness
+### Q2: Blog/News Feature
+Apakah Blog ini untuk:
+- A) Company news & updates?
+- B) Coffee education articles?
+- C) Both?
 
-### Phase 5:
-- [ ] Review ThemeCustomizer
-- [ ] Test with landing page
-- [ ] Add preview mode
-- [ ] Create theme presets
-- [ ] Add import/export
-- [ ] Document usage
+Should Blog posts have:
+- Rich text editor? (Bold, Italic, Images, etc)
+- Categories? (News, Tutorial, Promo, etc)
+- Author attribution?
 
-### Phase 6:
-- [ ] Design new dashboard mockups
-- [ ] Update Overview component
-- [ ] Update all data tables
-- [ ] Update sidebar navigation
-- [ ] Refine color system
-- [ ] Test dark mode
-- [ ] Mobile responsive testing
+### Q3: Button Routing
+Current buttons di screenshots:
+- "Lihat Menu" → Should go to `/menu` or `/products`?
+- "Eksplor Ruang" → Should go to `/about`, `/gallery`, or custom page?
+
+Do you want these links to be:
+- Hardcoded (developer sets)?
+- Configurable (admin can change via Page Builder)?
+
+### Q4: Cashier & Barista Dashboard
+Do CASHIER and BARISTA roles need:
+- Their own dashboard view?
+- Only access to Orders module?
+- POS (Point of Sale) interface?
+
+### Q5: Content Management → Landing Page Connection
+The current Content Management already has "Landing Page Preview" toggle. Is the issue:
+- Preview not working?
+- Changes not saving?
+- Changes not appearing on live site?
 
 ---
 
-## 🚀 Next Steps
+## 📊 RISK ASSESSMENT
 
-**Immediate (Today):**
-1. Complete Phase 2 - Replace all window.confirm/alert
-2. Start Phase 3 - Backend API for User Management
-
-**This Week:**
-1. Complete User Management CRUD
-2. Implement Audit Log system
-3. Test Theme Customizer with landing page
-
-**Next Week:**
-1. Dashboard Redesign
-2. Final testing & polish
-3. Documentation
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Adding new roles breaks existing permissions | HIGH | Test all role-based route guards |
+| Widget API calls slow down page load | MEDIUM | Implement caching + lazy loading |
+| Database migration for new modules | MEDIUM | Create backup before migration |
+| Breaking changes in ProductForm | LOW | Test product CRUD thoroughly |
 
 ---
 
-## 📝 Notes
+## ✅ ACCEPTANCE CRITERIA
 
-- All changes should be committed incrementally
-- Test each phase before moving to next
-- Maintain backward compatibility
-- Document all new APIs
-- Update README with new features
+**Request 1: Navbar in Page Builder**
+- [ ] Navbar appears in Page Builder preview mode
+- [ ] Navbar data loads correctly
+- [ ] Navbar is interactive (links work)
+
+**Request 2: Favicon & Title**
+- [ ] Browser tab shows "ANTITESA" title
+- [ ] Favicon shows Antitesa logo
+- [ ] (Bonus) Favicon uploadable via Content Management
+
+**Request 3: Product Image Upload**
+- [ ] "Gambar Produk" field visible in Create Product
+- [ ] "Gambar Produk" field visible in Edit Product
+- [ ] Cloudinary upload works
+- [ ] Image displays in product list
+
+**Request 4: Page Builder Buttons**
+- [ ] "Lihat Menu" button links to products page
+- [ ] All CTA buttons have working links
+- [ ] Links are configurable in Page Builder
+
+**Request 5: Forum & Blog Widgets**
+- [ ] ForumSection widget created
+- [ ] BlogSection widget created
+- [ ] All widgets fetch real data from API
+- [ ] Forum & Blog manageable from Dashboard
+- [ ] Comments work on Forum posts
+
+**Request 6: Access Control**
+- [ ] Change Password feature works
+- [ ] Update Name feature works
+- [ ] CASHIER role added to system
+- [ ] BARISTA role added to system
+- [ ] Permission matrix implemented correctly
+- [ ] Content Management ↔ Landing Page verified
 
 ---
 
-**Last Updated:** 2026-01-14  
-**Next Review:** After Phase 2 completion
+## 🎯 NEXT STEPS
+
+**Immediate Action** (Reply from user needed):
+1. Answer Q1-Q5 above
+2. Confirm priority order
+3. Approve estimated timeline
+
+**Once Approved**:
+1. Start with Phase 1 (Critical Fixes)
+2. Deploy & test after each phase
+3. Get user feedback before next phase
+
+---
+
+**Last Updated**: 15 Januari 2026, 10:58 WIB
