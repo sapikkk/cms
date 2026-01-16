@@ -229,6 +229,7 @@ import CloudinaryImageUploader from "@/components/ui/CloudinaryImageUploader.vue
 import {
   PhArrowLeft,
   PhBook,
+  PhBookOpen,
   PhInfo,
   PhPalette,
   PhImage,
