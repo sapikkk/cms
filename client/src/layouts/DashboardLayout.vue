@@ -91,12 +91,21 @@
               </div>
               
               <router-link
+                to="/dashboard/profile"
+                class="flex items-center gap-2 px-4 py-2 text-green-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-green-800 hover:text-brand-orange transition-colors"
+                @click="userMenuOpen = false"
+              >
+                <PhUserCircle :size="18" />
+                Profile & Password
+              </router-link>
+
+              <router-link
                 to="/dashboard/settings/theme"
                 class="flex items-center gap-2 px-4 py-2 text-green-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-green-800 hover:text-brand-orange transition-colors"
                 @click="userMenuOpen = false"
               >
                 <PhPalette :size="18" />
-                Settings
+                Theme Settings
               </router-link>
               
               <div class="border-t border-green-100 dark:border-green-800 my-2"></div>
@@ -144,7 +153,8 @@ import {
   PhCalendarBlank,
   PhLightbulb,
   PhTShirt,
-  PhBell
+  PhBell,
+  PhUserCircle
 } from '@phosphor-icons/vue'
 
 const route = useRoute()
@@ -211,7 +221,10 @@ const getRoleLabel = (role) => {
   const labels = {
     MASTER_ADMIN: 'Master Admin',
     ADMIN_OWNER: 'Admin/Owner',
-    MEDIA_STAFF: 'Media Staff'
+    MEDIA_STAFF: 'Media Staff',
+    CASHIER: 'Cashier',
+    BARISTA: 'Barista',
+    USER_PUBLIC: 'User'
   }
   return labels[role] || role
 }

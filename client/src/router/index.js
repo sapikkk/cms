@@ -44,6 +44,51 @@ const routes = [
       requiresAuth: false
     }
   },
+
+  // ==========================================
+  // FORUM (PUBLIC)
+  // ==========================================
+  {
+    path: '/forum',
+    name: 'ForumList',
+    component: () => import('@/views/storefront/ForumList.vue'),
+    meta: {
+      layout: 'storefront',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/forum/:id',
+    name: 'ForumDetail',
+    component: () => import('@/views/storefront/ForumDetail.vue'),
+    meta: {
+      layout: 'storefront',
+      requiresAuth: false
+    }
+  },
+
+  // ==========================================
+  // BLOG / NEWS (PUBLIC)
+  // ==========================================
+  {
+    path: '/blog',
+    name: 'BlogList',
+    component: () => import('@/views/storefront/BlogList.vue'),
+    meta: {
+      layout: 'storefront',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/blog/:slug',
+    name: 'BlogDetail',
+    component: () => import('@/views/storefront/BlogDetail.vue'),
+    meta: {
+      layout: 'storefront',
+      requiresAuth: false
+    }
+  },
+
   {
     path: '/dashboard',
     name: 'Dashboard',
@@ -51,7 +96,7 @@ const routes = [
     meta: {
       layout: 'dashboard',
       requiresAuth: true,
-      roles: ['MASTER_ADMIN', 'ADMIN_OWNER', 'MEDIA_STAFF']
+      roles: ['MASTER_ADMIN', 'ADMIN_OWNER', 'MEDIA_STAFF', 'CASHIER', 'BARISTA']
     }
   },
 
@@ -328,6 +373,16 @@ const routes = [
       layout: 'dashboard',
       requiresAuth: true,
       roles: ['MASTER_ADMIN', 'ADMIN_OWNER', 'MEDIA_STAFF']
+    }
+  },
+  {
+    path: '/dashboard/profile',
+    name: 'UserProfile',
+    component: () => import('@/views/dashboard/settings/UserProfile.vue'),
+    meta: {
+      layout: 'dashboard',
+      requiresAuth: true
+      // No specific roles - accessible to all authenticated users
     }
   },
 

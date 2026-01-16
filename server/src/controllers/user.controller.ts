@@ -78,7 +78,7 @@ export const createUser = async (
     }
 
     // Role Validation
-    const validRoles = ['ADMIN_OWNER', 'MEDIA_STAFF', 'USER_PUBLIC']
+    const validRoles = ['ADMIN_OWNER', 'MEDIA_STAFF', 'USER_PUBLIC', 'CASHIER', 'BARISTA']
     if (role && !validRoles.includes(role)) {
       return res.status(400).json({
         success: false,
@@ -309,7 +309,7 @@ export const updateUserRole = async (
     const { role } = req.body
 
     // Validate role
-    const validRoles = ['ADMIN_OWNER', 'MEDIA_STAFF', 'USER_PUBLIC']
+    const validRoles = ['ADMIN_OWNER', 'MEDIA_STAFF', 'USER_PUBLIC', 'CASHIER', 'BARISTA']
     if (!validRoles.includes(role)) {
       return res.status(400).json({
         success: false,
@@ -407,6 +407,75 @@ export const deleteUser = async (
     })
   } catch (error) {
     console.error('Delete user error:', error)
+    return res.status(500).json({
+      success: false,
+      message: ERROR_MESSAGES.INTERNAL_ERROR
+    })
+  }
+}
+
+/**
+ * Change Password (Self)
+ */
+export const changePassword = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  _next: NextFunction
+): Promise<Response> => {
+  try {
+    const userId = req.user!.userId
+    const { currentPassword, newPassword } = req.body
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current and new password are required'
+      })
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters'
+      })
+    }
+
+    // Get user with password
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: ERROR_MESSAGES.USER_NOT_FOUND
+      })
+    }
+
+    // Verify current password
+    const isValid = await bcrypt.compare(currentPassword, user.password)
+    if (!isValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Password saat ini salah'
+      })
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+    // Update password
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
+    })
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password updated successfully'
+    })
+  } catch (error) {
+    console.error('Change password error:', error)
     return res.status(500).json({
       success: false,
       message: ERROR_MESSAGES.INTERNAL_ERROR

@@ -49,35 +49,40 @@
       </div>
     </div>
 
-    <!-- Page Content -->
-    <div v-else class="pb-20">
-      <!-- Empty State -->
-      <div v-if="sections.length === 0" class="container mx-auto px-4 py-20 text-center">
-        <div class="max-w-md mx-auto">
-          <div class="p-4 bg-cream-100 dark:bg-green-800 rounded-full inline-flex mb-4">
-            <PhPackage :size="48" class="text-brand-orange" weight="duotone" />
+    <!-- Page Content with Navbar -->
+    <div v-else>
+      <!-- Navbar Preview (from actual storefront) -->
+      <Navbar :navbar-data="navbarConfig" />
+      
+      <div class="pb-20">
+        <!-- Empty State -->
+        <div v-if="sections.length === 0" class="container mx-auto px-4 py-20 text-center">
+          <div class="max-w-md mx-auto">
+            <div class="p-4 bg-cream-100 dark:bg-green-800 rounded-full inline-flex mb-4">
+              <PhPackage :size="48" class="text-brand-orange" weight="duotone" />
+            </div>
+            <h2 class="text-2xl font-bold text-green-800 dark:text-white mb-2">Halaman Masih Kosong</h2>
+            <p class="text-green-600 dark:text-green-400 mb-6">
+              Belum ada konten di halaman ini. Mulai tambahkan widget dari builder.
+            </p>
+            <router-link
+              :to="`/dashboard/pages/${pageId}/builder`"
+              class="inline-block px-6 py-3 bg-brand-orange text-white rounded-lg font-bold hover:bg-orange-700 transition-colors"
+            >
+              Mulai Edit
+            </router-link>
           </div>
-          <h2 class="text-2xl font-bold text-green-800 dark:text-white mb-2">Halaman Masih Kosong</h2>
-          <p class="text-green-600 dark:text-green-400 mb-6">
-            Belum ada konten di halaman ini. Mulai tambahkan widget dari builder.
-          </p>
-          <router-link
-            :to="`/dashboard/pages/${pageId}/builder`"
-            class="inline-block px-6 py-3 bg-brand-orange text-white rounded-lg font-bold hover:bg-orange-700 transition-colors"
-          >
-            Mulai Edit
-          </router-link>
         </div>
-      </div>
 
-      <!-- Render Sections -->
-      <div v-else>
-        <component
-          v-for="section in sections"
-          :key="section.id"
-          :is="getWidgetComponent(section.type)"
-          v-bind="section.props"
-        />
+        <!-- Render Sections -->
+        <div v-else>
+          <component
+            v-for="section in sections"
+            :key="section.id"
+            :is="getWidgetComponent(section.type)"
+            v-bind="section.props"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -93,6 +98,7 @@ import {
   PhWarning, 
   PhPackage 
 } from '@phosphor-icons/vue'
+import Navbar from '@/components/storefront/Navbar.vue'
 import pageService from '@/api/services/page.service'
 
 // Dynamic Widget Imports (Same as Builder)
@@ -128,6 +134,7 @@ const pageTitle = ref('Loading...')
 const sections = ref([])
 const loading = ref(true)
 const error = ref(null)
+const navbarConfig = ref(null) // Store navbar data for preview
 
 const widgetComponents = {
   HeroBannerCenter: markRaw(HeroBannerCenter),
@@ -168,6 +175,18 @@ const fetchPage = async () => {
     const page = data.data
     
     pageTitle.value = page.title
+    
+    // Extract navbar configuration from page metadata or use global config
+    if (page.navbarData) {
+      navbarConfig.value = page.navbarData
+    } else {
+      // Fallback: Load navbar from global site config or use default
+      navbarConfig.value = {
+        showInNavbar: page.showInNavbar !== undefined ? page.showInNavbar : true,
+        title: page.title,
+        slug: page.slug
+      }
+    }
     
     // Map backend sections to frontend widgets
     if (page.sections && Array.isArray(page.sections)) {

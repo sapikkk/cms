@@ -284,6 +284,8 @@
               >
                 <option value="USER_PUBLIC">Public User (Customer)</option>
                 <option value="MEDIA_STAFF">Media Staff (Content & Products)</option>
+                <option value="CASHIER">Cashier (POS & Transaksi)</option>
+                <option value="BARISTA">Barista (Order Management)</option>
                 <option value="ADMIN_OWNER">Admin Owner (Full Access)</option>
               </select>
             </div>
@@ -317,7 +319,8 @@ import { ref, reactive, onMounted } from 'vue'
 import userService from '@/api/services/user.service'
 import { 
   PhUsers, PhWarningCircle, PhShieldCheck, PhCrown, PhPenNib, PhUser, 
-  PhLock, PhLockOpen, PhIdentificationBadge, PhTrash, PhCheckCircle, PhPlus, PhUserPlus
+  PhLock, PhLockOpen, PhIdentificationBadge, PhTrash, PhCheckCircle, PhPlus, PhUserPlus,
+  PhCashRegister, PhCoffee
 } from '@phosphor-icons/vue'
 import { useConfirm } from '@/composables/useConfirm'
 import { showToast } from '@/utils/toast'
@@ -346,6 +349,8 @@ const { confirm } = useConfirm()
 const availableRoles = [
   { value: 'ADMIN_OWNER', label: 'Owner', desc: 'Akses penuh bisnis', icon: PhCrown, bgClass: 'bg-purple-100 dark:bg-purple-900/40', textClass: 'text-purple-600 dark:text-purple-300' },
   { value: 'MEDIA_STAFF', label: 'Media Staff', desc: 'Konten & Produk', icon: PhPenNib, bgClass: 'bg-blue-100 dark:bg-blue-900/40', textClass: 'text-blue-600 dark:text-blue-300' },
+  { value: 'CASHIER', label: 'Cashier', desc: 'Akses POS & Transaksi', icon: PhCashRegister, bgClass: 'bg-teal-100 dark:bg-teal-900/40', textClass: 'text-teal-600 dark:text-teal-300' },
+  { value: 'BARISTA', label: 'Barista', desc: 'Management Pesanan', icon: PhCoffee, bgClass: 'bg-amber-100 dark:bg-amber-900/40', textClass: 'text-amber-600 dark:text-amber-300' },
   { value: 'USER_PUBLIC', label: 'Public User', desc: 'Customer biasa', icon: PhUser, bgClass: 'bg-gray-100 dark:bg-gray-800', textClass: 'text-gray-600 dark:text-gray-300' }
 ]
 
@@ -491,6 +496,8 @@ const formatRole = (role) => {
     'MASTER_ADMIN': 'Master',
     'ADMIN_OWNER': 'Owner',
     'MEDIA_STAFF': 'Staff',
+    'CASHIER': 'Cashier',
+    'BARISTA': 'Barista',
     'USER_PUBLIC': 'Public'
   }
   return map[role] || role
@@ -501,6 +508,8 @@ const getRoleIcon = (role) => {
     case 'MASTER_ADMIN': return PhShieldCheck
     case 'ADMIN_OWNER': return PhCrown
     case 'MEDIA_STAFF': return PhPenNib
+    case 'CASHIER': return PhCashRegister
+    case 'BARISTA': return PhCoffee
     default: return PhUser
   }
 }
@@ -510,6 +519,8 @@ const getRoleBadgeClass = (role) => {
     case 'MASTER_ADMIN': return 'bg-red-50 text-red-700 border-red-200/50 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'
     case 'ADMIN_OWNER': return 'bg-purple-50 text-purple-700 border-purple-200/50 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800'
     case 'MEDIA_STAFF': return 'bg-blue-50 text-blue-700 border-blue-200/50 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800'
+    case 'CASHIER': return 'bg-teal-50 text-teal-700 border-teal-200/50 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800'
+    case 'BARISTA': return 'bg-amber-50 text-amber-700 border-amber-200/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800'
     default: return 'bg-gray-50 text-gray-700 border-gray-200/50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
   }
 }

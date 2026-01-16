@@ -195,20 +195,23 @@ export class FunFactController {
   async createComment(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params
-      const { text, authorName, authorEmail } = req.body
+      const { text, contentHtml, authorName, authorEmail } = req.body
 
       const comment = await prisma.comment.create({
         data: {
           funFactId: id,
           text,
+          contentHtml: contentHtml || text, // Use contentHtml or fallback to text
           authorName,
-          authorEmail
+          authorEmail,
+          isApproved: true,  // Auto-approve for now
+          isVisible: true
         }
       })
 
       res.status(201).json({
         success: true,
-        message: 'Komentar berhasil ditambahkan. Menunggu moderasi.',
+        message: 'Komentar berhasil ditambahkan.',
         data: comment
       })
     } catch (error) {

@@ -5,7 +5,6 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -22,6 +21,8 @@ enum Role {
   MASTER_ADMIN  // Level 0 - Absolute Power
   ADMIN_OWNER   // Level 1 - Business Owner
   MEDIA_STAFF   // Level 2 - Content Creator
+  CASHIER       // Level 2.5 - POS Access
+  BARISTA       // Level 2.5 - Kitchen Display
   USER_PUBLIC   // Level 3 - Website Visitor
 }
 
@@ -72,6 +73,7 @@ model User {
   createdPages Page[]
   createdBooks Book[]
   createdEvents Event[]
+  blogPosts    BlogPost[]
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -474,7 +476,8 @@ model Comment {
   id String @id @default(uuid())
   
   // Content
-  text        String @db.Text
+  text        String @db.Text  // Plain text version (for fallback/search)
+  contentHtml String @db.Text  // Rich text HTML version (formatted)
   authorName  String
   authorEmail String?
   
@@ -587,4 +590,53 @@ model Section {
   @@index([sectionType])
   @@index([sortOrder])
   @@index([pageId])
+}
+// Add to schema.prisma after FunFact model
+
+enum BlogCategory {
+  NEWS          // Company news
+  ARTICLE       // Coffee articles
+  TUTORIAL      // How-to guides
+  ANNOUNCEMENT  // Important updates
+  OTHER
+}
+
+model BlogPost {
+  id      String        @id @default(uuid())
+  title   String
+  slug    String        @unique
+  excerpt String?       @db.Text  // Short summary
+  content String        @db.Text  // Rich text HTML content
+  
+  // Featured Image
+  coverImage String?
+  
+  // Categorization
+  category BlogCategory @default(ARTICLE)
+  tags     String[]     // Array of tags
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  
+  // Engagement
+  viewCount Int @default(0)
+  likeCount Int @default(0)
+  
+  // Publishing
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  
+  // Author (Admin/Staff)
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id])
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([isPublished])
+  @@index([category])
+  @@index([publishedAt])
 }

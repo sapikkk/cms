@@ -314,6 +314,7 @@ import {
   PhGear,
   PhX,
 } from "@phosphor-icons/vue";
+import CloudinaryImageUploader from "@/components/ui/CloudinaryImageUploader.vue";
 import productService from "@/api/services/product.service";
 import { useConfirm } from "@/composables/useConfirm";
 import { showToast } from "@/utils/toast";

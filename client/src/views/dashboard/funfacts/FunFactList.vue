@@ -57,7 +57,7 @@
               class="flex-1 py-2 flex items-center justify-center gap-2 bg-cream-100 hover:bg-cream-200 dark:bg-green-800 dark:hover:bg-green-700 text-green-700 dark:text-white rounded-lg text-sm transition-colors font-medium"
             >
               <PhPencilSimple :size="16" />
-              Edit
+              Kelola / Moderasi
             </router-link>
             <button
               @click="deleteFunFact(fact.id)"

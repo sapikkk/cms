@@ -13,7 +13,9 @@ import reportRoutes from "./report.routes";
 import activityLogRoutes from "./activityLog.routes";
 import eventRoutes from "./event.routes";
 import merchandiseRoutes from "./merchandise.routes";
+import blogRoutes from "../blog.routes";
 import funfactRoutes from "./funfact.routes";
+import forumRoutes from "../forum.routes";  // Forum = FunFact + Comments
 import notificationRoutes from "./notification.routes";
 import sectionRoutes from "./section.routes";
 import configRoutes from "./config.routes";
@@ -38,7 +40,9 @@ router.use("/activity-logs", activityLogRoutes);
  */
 router.use("/events", eventRoutes);
 router.use("/merchandise", merchandiseRoutes);
+router.use("/blog", blogRoutes); // NEW: Blog/News
 router.use("/funfacts", funfactRoutes);
+router.use("/forum", forumRoutes);  // NEW: Forum with public comments
 router.use("/notifications", notificationRoutes);
 router.use("/sections", sectionRoutes);
 router.use("/config", configRoutes);

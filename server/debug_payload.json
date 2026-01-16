@@ -1,36 +1,91 @@
 [
   {
-    "pageId": "59f3fbca-660a-450a-a5e4-9b3d64114253",
-    "name": "HeroBannerCenter 1",
-    "slug": "herobannercenter-1768446582813-0-k3rw130",
+    "pageId": "d09a893e-f711-4f77-8e6d-518c55e37814",
+    "name": "HeroSplitRight 1",
+    "slug": "herosplitright-1768565830058-0-5otrbur",
     "sectionType": "HERO",
     "contentData": {
-      "title": "Bukan Cuma<br><span class=\"text-orange-500\">Tempat Ngopi</span>",
+      "badge": "Premium Experience",
       "features": [
         {
-          "text": "500+ Buku"
+          "title": "Single Origin Beans",
+          "subtitle": "Biji kopi pilihan dari petani lokal Indonesia"
         },
         {
-          "text": "High-Speed WiFi"
+          "title": "Manual Brew Methods",
+          "subtitle": "V60, Chemex, French Press - lu pilih, kita seduh"
         },
         {
-          "text": "08:00 - 23:00"
+          "title": "Barista Bersertifikat",
+          "subtitle": "Bukan asal bikin. Setiap cangkir adalah karya"
         }
       ],
-      "subtitle": "Library. Workspace. Coffee. Tiga elemen yang bikin lu produktif sambil tetep santai. <b>Antitesa</b> bukan tempat nongkrong biasa.",
-      "badgeText": "Marpoyan, Pekanbaru",
-      "buttonText": "Lihat Menu",
-      "secondaryButtonText": "Eksplor Ruang",
-      "componentType": "HeroBannerCenter"
+      "imageUrl": "",
+      "quoteText": "Kopi yang baik datang dari biji yang baik. Pikiran yang jernih datang dari ruang yang tenang.",
+      "buttonText": "Eksplor Menu Kopi →",
+      "description": "<p><span class=\"text-green-500\">Ini tenta</span><span class=\"text-orange-500\">ng ritual. Tentang menemukan momen di tengah kesibukan. Tentang menyeduh pikiran sambil menikmati seduhan terbaik.</span></p>",
+      "quoteAuthor": "Filosofi Antitesa",
+      "headingLine1": "Kopi Bukan",
+      "headingLine2Part1": "Sekadar",
+      "headingLine2Part2": "Minuman",
+      "componentType": "HeroSplitRight"
     },
     "styleConfig": {},
     "sortOrder": 0,
     "isVisible": true
   },
   {
-    "pageId": "59f3fbca-660a-450a-a5e4-9b3d64114253",
-    "name": "ProductGrid 2",
-    "slug": "productgrid-1768446582813-1-s93rust",
+    "pageId": "d09a893e-f711-4f77-8e6d-518c55e37814",
+    "name": "HeroSplitLeft 2",
+    "slug": "herosplitleft-1768565830058-1-m0am3aa",
+    "sectionType": "HERO",
+    "contentData": {
+      "badge": "DI JALAN MARPOYAN",
+      "stats": [
+        {
+          "label": "Buku",
+          "value": "500+"
+        },
+        {
+          "label": "Meja Kerja",
+          "value": "24"
+        },
+        {
+          "label": "Focus Mode",
+          "value": "100%"
+        }
+      ],
+      "features": [
+        {
+          "title": "Private Workspace",
+          "subtitle": "Meja individual dengan colokan & lampu baca"
+        },
+        {
+          "title": "Koleksi Buku Kurated",
+          "subtitle": "Dari filosofi sampe self-development"
+        },
+        {
+          "title": "Suasana Tenang",
+          "subtitle": "No drama. No noise. Pure focus."
+        }
+      ],
+      "imageUrl": "",
+      "description": "Gak cuma sekedar wifi gratisan dan kursi empuk. Di sini lu dapet akses ke ribuan buku, meja kerja yang proper, sama kopi yang bikin otak fresh.",
+      "headingLine1": "Ruang Baca.",
+      "headingLine2": "Ruang Kerja.",
+      "headingLine3": "Ruang Pikir.",
+      "buttonPrimary": "Book Workspace",
+      "buttonSecondary": "Lihat Virtual Tour",
+      "componentType": "HeroSplitLeft"
+    },
+    "styleConfig": {},
+    "sortOrder": 1,
+    "isVisible": true
+  },
+  {
+    "pageId": "d09a893e-f711-4f77-8e6d-518c55e37814",
+    "name": "ProductGrid 3",
+    "slug": "productgrid-1768565830058-2-9bidm8w",
     "sectionType": "PRODUCTS",
     "contentData": {
       "limit": 8,
@@ -40,36 +95,7 @@
       "componentType": "ProductGrid"
     },
     "styleConfig": {},
-    "sortOrder": 1,
-    "isVisible": true
-  },
-  {
-    "pageId": "59f3fbca-660a-450a-a5e4-9b3d64114253",
-    "name": "ContactCard 3",
-    "slug": "contactcard-1768446582813-2-3hd84kt",
-    "sectionType": "TEXT",
-    "contentData": {
-      "title": "Get In Touch",
-      "componentType": "ContactCard"
-    },
-    "styleConfig": {},
     "sortOrder": 2,
-    "isVisible": true
-  },
-  {
-    "pageId": "59f3fbca-660a-450a-a5e4-9b3d64114253",
-    "name": "EventsSection 4",
-    "slug": "eventssection-1768446582813-3-z2wuv8i",
-    "sectionType": "CUSTOM",
-    "contentData": {
-      "limit": 3,
-      "title": "Lebih dari Sekedar <span class=\"text-orange-500\">Ngopi</span>",
-      "showLink": true,
-      "subtitle": "Workshop, book club, dan networking events setiap bulan",
-      "componentType": "EventsSection"
-    },
-    "styleConfig": {},
-    "sortOrder": 3,
     "isVisible": true
   }
 ]

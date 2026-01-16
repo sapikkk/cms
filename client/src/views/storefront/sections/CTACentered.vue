@@ -23,7 +23,13 @@
       </div>
 
       <div v-if="primaryButtonText || secondaryButtonText" class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <button v-if="primaryButtonText" class="group relative px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 min-w-[200px] overflow-hidden">
+        <component
+          v-if="primaryButtonText"
+          :is="primaryButtonUrl ? (primaryButtonUrl.startsWith('/') ? 'router-link' : 'a') : 'button'"
+          :to="primaryButtonUrl && primaryButtonUrl.startsWith('/') ? primaryButtonUrl : undefined"
+          :href="primaryButtonUrl && !primaryButtonUrl.startsWith('/') ? primaryButtonUrl : undefined"
+          class="group relative px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 min-w-[200px] overflow-hidden inline-block text-center"
+        >
           <span class="relative z-10 flex items-center justify-center gap-2">
             {{ primaryButtonText }}
             <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,11 +37,17 @@
             </svg>
           </span>
           <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-        </button>
+        </component>
         
-        <button v-if="secondaryButtonText" class="px-8 py-4 bg-transparent border-2 border-cream-100/30 text-white font-bold rounded-xl hover:bg-cream-100/10 hover:border-cream-100 transition-all duration-300 min-w-[200px]">
+        <component
+          v-if="secondaryButtonText"
+          :is="secondaryButtonUrl ? (secondaryButtonUrl.startsWith('/') ? 'router-link' : 'a') : 'button'"
+          :to="secondaryButtonUrl && secondaryButtonUrl.startsWith('/') ? secondaryButtonUrl : undefined"
+          :href="secondaryButtonUrl && !secondaryButtonUrl.startsWith('/') ? secondaryButtonUrl : undefined"
+          class="px-8 py-4 bg-transparent border-2 border-cream-100/30 text-white font-bold rounded-xl hover:bg-cream-100/10 hover:border-cream-100 transition-all duration-300 min-w-[200px] inline-block text-center"
+        >
           {{ secondaryButtonText }}
-        </button>
+        </component>
       </div>
 
       <div v-if="badges && badges.length > 0" class="mt-12 flex items-center justify-center gap-6 text-cream-300 text-sm flex-wrap">
@@ -66,7 +78,9 @@ defineProps({
     ]
   },
   primaryButtonText: { type: String, default: 'Reservasi Sekarang' },
+  primaryButtonUrl: { type: String, default: '/contact' },
   secondaryButtonText: { type: String, default: 'Lihat Menu' },
+  secondaryButtonUrl: { type: String, default: '/menu' },
   badges: {
     type: Array,
     default: () => [

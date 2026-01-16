@@ -23,14 +23,26 @@
 
         <!-- CTA Buttons -->
         <div v-if="buttonText || secondaryButtonText" class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-          <button v-if="buttonText" class="group relative px-8 py-4 bg-green-800 hover:bg-green-900 dark:bg-cream-100 dark:hover:bg-cream-200 text-white dark:text-green-900 font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 min-w-[200px]">
+          <component
+            v-if="buttonText"
+            :is="primaryButtonUrl ? (primaryButtonUrl.startsWith('/') ? 'router-link' : 'a') : 'button'"
+            :to="primaryButtonUrl && primaryButtonUrl.startsWith('/') ? primaryButtonUrl : undefined"
+            :href="primaryButtonUrl && !primaryButtonUrl.startsWith('/') ? primaryButtonUrl : undefined"
+            class="group relative px-8 py-4 bg-green-800 hover:bg-green-900 dark:bg-cream-100 dark:hover:bg-cream-200 text-white dark:text-green-900 font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 min-w-[200px] inline-block text-center"
+          >
             <span class="relative z-10">{{ buttonText }}</span>
             <div class="absolute inset-0 bg-orange-500 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-          </button>
+          </component>
           
-          <button v-if="secondaryButtonText" class="px-8 py-4 bg-transparent border-2 border-green-300 dark:border-green-700 text-green-900 dark:text-cream-100 font-bold rounded-xl hover:bg-green-100 dark:hover:bg-green-900 transition-all duration-300 min-w-[200px]">
+          <component
+            v-if="secondaryButtonText"
+            :is="secondaryButtonUrl ? (secondaryButtonUrl.startsWith('/') ? 'router-link' : 'a') : 'button'"
+            :to="secondaryButtonUrl && secondaryButtonUrl.startsWith('/') ? secondaryButtonUrl : undefined"
+            :href="secondaryButtonUrl && !secondaryButtonUrl.startsWith('/') ? secondaryButtonUrl : undefined"
+            class="px-8 py-4 bg-transparent border-2 border-green-300 dark:border-green-700 text-green-900 dark:text-cream-100 font-bold rounded-xl hover:bg-green-100 dark:hover:bg-green-900 transition-all duration-300 min-w-[200px] inline-block text-center"
+          >
             {{ secondaryButtonText }}
-          </button>
+          </component>
         </div>
 
         <!-- Feature Pills (Editable Array) -->
@@ -83,9 +95,17 @@ const props = defineProps({
     type: String,
     default: 'Lihat Menu'
   },
+  primaryButtonUrl: {
+    type: String,
+    default: '/menu'  // Default URL for primary button
+  },
   secondaryButtonText: {
     type: String,
     default: 'Eksplor Ruang'
+  },
+  secondaryButtonUrl: {
+    type: String,
+    default: '/about'  // Default URL for secondary button
   },
   features: {
     type: Array,

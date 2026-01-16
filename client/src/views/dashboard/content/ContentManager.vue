@@ -1,13 +1,12 @@
 <template>
   <div class="p-6 space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <!-- Header -->\n    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-green-800 dark:text-green-100">
           Content Management
         </h1>
         <p class="text-green-600 dark:text-green-400 mt-1">
-          Kelola konten landing page dari sini. Semua perubahan akan langsung terlihat di halaman publik.
+          Kelola pengaturan site-wide (Navbar, Footer, Theme). <strong>Untuk edit konten halaman, gunakan Page Builder.</strong>
         </p>
       </div>
       <div class="flex items-center gap-3">
@@ -40,6 +39,34 @@
           <PhSpinner v-else :size="20" class="animate-spin" />
           Simpan Perubahan
         </button>
+      </div>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div class="flex gap-3">
+        <PhInfo :size="24" class="text-blue-600 dark:text-blue-400 flex-shrink-0" />
+        <div class="flex-1">
+          <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-1">
+            📌 Apa itu Content Management?
+          </h3>
+          <p class="text-sm text-blue-700 dark:text-blue-400 mb-2">
+            Content Management digunakan untuk mengatur <strong>pengaturan site-wide</strong> seperti:
+          </p>
+          <ul class="text-sm text-blue-700 dark:text-blue-400 list-disc list-inside space-y-1 mb-3">
+            <li><strong>Navbar:</strong> Menu items, logo, links</li>
+            <li><strong>Footer:</strong> Copyright text, social links</li>
+            <li><strong>Theme:</strong> Warna brand, favicon (upcoming)</li>
+          </ul>
+          <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded p-3">
+            <p class="text-sm text-amber-800 dark:text-amber-300">
+              <strong>⚠️ Penting:</strong> Untuk mengedit <strong>konten halaman</strong> (Hero, Products, Events, dsb), gunakan 
+              <router-link to="/dashboard/pages" class="underline font-semibold hover:text-amber-900 dark:hover:text-amber-200">
+                Page Builder →
+              </router-link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -214,6 +241,7 @@ import {
   PhSpinner, 
   PhEye,
   PhGear,
+  PhInfo,
   PhNavigationArrow,
   PhImage,
   PhCalendar,
